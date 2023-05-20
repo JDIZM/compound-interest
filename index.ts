@@ -1,24 +1,20 @@
-import { compoundInterest, calcInvestmentWithInterest } from "./calc/compoundInterest";
+import {
+  compoundInterestOverYears,
+  calcInvestmentWithInterest,
+  compoundInterestPerPeriod
+} from "./calc/compoundInterest";
 
-const intitial = () => {
-  const principal = 250_000;
-  const rate = 0.078;
-  const time = 29;
+const test = compoundInterestOverYears(100, 0.1, 2);
+console.log("compoundInterestOverYears", test);
 
-  const result = compoundInterest(principal, rate, time);
-  console.log(result);
-};
+const test2 = calcInvestmentWithInterest(250_000, 7.8, 29, 1, 12_000);
+console.log(test2);
 
-intitial();
+const cpi2 = compoundInterestPerPeriod(250_000, 7.8, 29, 12, 12_000);
+console.log("cpi2", cpi2);
 
-const withInterest = () => {
-  const principal = 250_000;
-  const rate = 0.078;
-  const time = 29;
-  const amountPerAnnum = 6_000;
+// TODO it should calc money invested over time. only calcs principal + interest.
+// const investmentPie = calcInvestmentWithInterest(500, 8, 30, 12, 6_000);
+// console.log(investmentPie);
 
-  const result = calcInvestmentWithInterest(principal, rate, time, amountPerAnnum);
-  console.log(result);
-};
-
-withInterest();
+export * from "./calc/compoundInterest";

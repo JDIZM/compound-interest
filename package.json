@@ -2,28 +2,30 @@
   "name": "compound-interest",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/calc/compoundInterest",
+  "main": "./dist/index.js",
   "scripts": {
     "dev": "npx vite-node index.ts",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "format": "prettier -w '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
     "format:check": "prettier --check '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
     "tsc:check": "tsc -p tsconfig.json --noEmit",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.2.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
-    "@types/node": "^20.2.1",
-    "typescript": "^5.0.4",
-    "vite-node": "^0.31.1",
-    "prettier": "^2.8.7",
     "eslint": "^8.37.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-alias": "^1.1.2",
-    "eslint-plugin-import": "^2.27.5"
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.4",
+    "vite-node": "^0.31.1",
+    "vitest": "^0.31.1"
   }
 }
