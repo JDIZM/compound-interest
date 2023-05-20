@@ -1,4 +1,4 @@
-import { compoundInterest } from "./calc/compoundInterest";
+import { compoundInterest, calcInvestmentWithInterest } from "./calc/compoundInterest";
 
 const intitial = () => {
   const principal = 250_000;
@@ -10,3 +10,15 @@ const intitial = () => {
 };
 
 intitial();
+
+const withInterest = () => {
+  const principal = 250_000;
+  const rate = 0.078;
+  const time = 29;
+  const amountPerAnnum = 6_000;
+
+  const result = calcInvestmentWithInterest(principal, rate, time, amountPerAnnum);
+  console.log(result);
+};
+
+withInterest();

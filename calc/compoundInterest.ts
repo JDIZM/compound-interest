@@ -9,3 +9,13 @@ export const compoundInterest = (principal: number, rate: number, time: number):
 
   return principal * multiplier;
 };
+
+export const calcInvestmentWithInterest = (principal: number, rate: number, time: number, amountPerAnnum: number) => {
+  const balance = compoundInterest(principal, rate, time);
+  const totalInvestment = principal + amountPerAnnum * time;
+  return {
+    balance,
+    totalInvestment,
+    totalInterest: balance - totalInvestment
+  };
+};

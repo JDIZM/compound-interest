@@ -9,7 +9,8 @@
     "module": "commonjs",
     "lib": ["es2021"],
     "allowSyntheticDefaultImports": true,
-    "noEmit": true,
+    "declaration": true,
+    "noEmit": false,
     "removeComments": true,
     "sourceMap": true,
     "skipLibCheck": true,
@@ -28,10 +29,11 @@
     "typeRoots": ["./node_modules/@types"],
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

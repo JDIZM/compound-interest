@@ -8,7 +8,8 @@
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "format": "prettier -w '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
     "format:check": "prettier --check '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
-    "tsc:check": "tsc -p tsconfig.json --noEmit"
+    "tsc:check": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json"
   },
   "keywords": [],
   "author": "",
