@@ -2,7 +2,7 @@
   "name": "compound-interest",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/calc/compoundInterest",
   "scripts": {
     "dev": "npx vite-node index.ts",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
