@@ -4,14 +4,25 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx vite-node index.ts",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
+    "format": "prettier -w '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
+    "format:check": "prettier --check '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
+    "tsc:check": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
+    "@types/node": "^20.2.1",
+    "typescript": "^5.0.4",
     "vite-node": "^0.31.1",
-    "typescript": "^5.0.4"
+    "prettier": "^2.8.7",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.27.5"
   }
 }
