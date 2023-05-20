@@ -5,12 +5,19 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:js": "node index.js",
+    "dev:ts": "npx vite-node index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "compound-interest": "file:.."
+    "@types/node": "^20.2.1",
+    "compound-interest": "file:..",
+    "vite-node": "^0.31.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
   }
 }
