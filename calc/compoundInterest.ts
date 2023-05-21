@@ -27,6 +27,20 @@ export const calcInvestmentWithInterest = (
   };
 };
 
+export type InvestmentType = "lumpSum" | "contribution" | "debtRepayment" | "mortgage";
+
+export type MortgageOptions = {
+  deposit: number;
+  monthlyRepayment: number;
+  interestRate: number;
+  years: number;
+  debtRepayment?: boolean;
+};
+
+export type InvestmentOptions = {
+  principal: number;
+};
+
 export interface InterestOptions {
   principal: number;
   rate: number;
@@ -35,7 +49,25 @@ export interface InterestOptions {
   amountPerAnnum?: number;
   accrualOfPaymentsPerAnnum?: boolean;
   currentPositionInYears?: number;
+  debtRepayment?: boolean;
+  mortgage?: MortgageOptions;
 }
+
+export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type: InvestmentType) => {
+  // TODO set single payment for a no contributions option
+  switch (type) {
+    case "lumpSum":
+      return 1;
+    case "contribution":
+      return years * paymentsPerAnnum;
+    case "debtRepayment":
+      return years * paymentsPerAnnum;
+    // case "mortgage":
+    //   return years * paymentsPerAnnum;
+    default:
+      return years * paymentsPerAnnum;
+  }
+};
 
 export const compoundInterestPerPeriod = (options: InterestOptions) => {
   let { rate } = options;
@@ -45,23 +77,47 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     paymentsPerAnnum = 1,
     amountPerAnnum = 0,
     accrualOfPaymentsPerAnnum = false,
-    currentPositionInYears
+    currentPositionInYears,
+    debtRepayment = false
   } = options;
   // if rate is provided as a percentage, convert to decimal
   if (rate >= 1) {
     rate = rate / 100;
   }
 
+  let investmentType: InvestmentType = "lumpSum";
+
+  if (!accrualOfPaymentsPerAnnum) {
+    if (amountPerAnnum > 0) {
+      investmentType = "contribution";
+    }
+    if (debtRepayment) {
+      investmentType = "debtRepayment";
+    }
+  }
+
   // 1. calculate compound interest of a lump sum over time
   // 2. calculate compound interest with additional contributions
   // 3. calculate compound interest with a decreasing principal
 
-  const totalPayments = accrualOfPaymentsPerAnnum ? years * paymentsPerAnnum : 1;
+  // const totalPayments = accrualOfPaymentsPerAnnum ? years * paymentsPerAnnum : 1;
+  const totalPayments = calcTotalPayments(years, paymentsPerAnnum, investmentType);
   const ratePerPeriod = rate / paymentsPerAnnum;
   const multiplierTotal = Math.pow(1 + rate, years);
   const multiplierPerPeriod = 1 + ratePerPeriod;
 
-  const totalInvestment = accrualOfPaymentsPerAnnum ? principal + amountPerAnnum * years : principal + amountPerAnnum;
+  // FIXME tidy up total investment calculation
+  let totalInvestment = accrualOfPaymentsPerAnnum ? principal + amountPerAnnum * years : principal + amountPerAnnum;
+  // const totalInvestment = principal + amountPerAnnum * years;
+
+  if (investmentType === "contribution") {
+    totalInvestment = principal + amountPerAnnum * years;
+  }
+
+  // eg mortgage and payments don't accrue interest
+  if (debtRepayment && !accrualOfPaymentsPerAnnum) {
+    totalInvestment = amountPerAnnum * years;
+  }
 
   const interestPerAnnum: number[] = [];
   const interestMatrix = new Map<string, number[]>();
@@ -131,6 +187,11 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     currentBalance,
     totalInterest,
     endBalance,
-    accrualOfPaymentsPerAnnum
+    accrualOfPaymentsPerAnnum,
+    investmentType
   };
+};
+
+export const calcMortgage = (options: MortgageOptions) => {
+  //
 };

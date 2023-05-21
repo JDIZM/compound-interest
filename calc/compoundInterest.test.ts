@@ -17,7 +17,61 @@ describe("compoundInterestOverYears", () => {
 });
 
 describe("compoundInterestPerPeriod", () => {
-  it("should calc compound interest over multiple years", () => {
+  it("should calculate a lump sum with no contributions", () => {
+    const options: InterestOptions = {
+      principal: 500,
+      rate: 3.4,
+      years: 2,
+      paymentsPerAnnum: 12,
+      amountPerAnnum: 0
+    };
+    const result = compoundInterestPerPeriod(options);
+    expect(result).toMatchObject(
+      expect.objectContaining({
+        accrualOfPaymentsPerAnnum: false,
+        currentBalance: 534.58,
+        currentPositionInYears: undefined,
+        endBalance: 534.578,
+        paymentsPerAnnum: 12,
+        totalPayments: 1,
+        rate: 0.034,
+        totalInvestment: 500,
+        investmentType: "lumpSum"
+      })
+    );
+  });
+
+  it("should calculate monthly contributions", () => {
+    //
+  });
+
+  it("should calc compound interest over multiple years with debtRepayment option", () => {
+    const options: InterestOptions = {
+      principal: 250_000,
+      rate: 7.8,
+      years: 29,
+      paymentsPerAnnum: 12,
+      amountPerAnnum: 12_000,
+      debtRepayment: true
+    };
+    const result = compoundInterestPerPeriod(options);
+    expect(result).toMatchObject(
+      expect.objectContaining({
+        accrualOfPaymentsPerAnnum: false,
+        currentBalance: 2207415.47,
+        currentPositionInYears: undefined,
+        // currentBalance: 2207415.46872,
+        endBalance: 2207415.4267796557,
+        paymentsPerAnnum: 12,
+        totalPayments: 348,
+        rate: 0.078,
+        totalInvestment: 348000,
+        investmentType: "debtRepayment"
+      })
+    );
+  });
+
+  it("should calc compound interest over multiple years with contributions", () => {
     const options: InterestOptions = {
       principal: 250_000,
       rate: 7.8,
@@ -31,12 +85,12 @@ describe("compoundInterestPerPeriod", () => {
         accrualOfPaymentsPerAnnum: false,
         currentBalance: 2207415.47,
         currentPositionInYears: undefined,
-        // currentBalance: 2207415.46872,
         endBalance: 2207415.4267796557,
         paymentsPerAnnum: 12,
         totalPayments: 348,
         rate: 0.078,
-        totalInvestment: 598000
+        totalInvestment: 598000,
+        investmentType: "contribution"
       })
     );
   });
