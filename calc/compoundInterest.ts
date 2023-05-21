@@ -56,7 +56,7 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
   // 2. calculate compound interest with additional contributions
   // 3. calculate compound interest with a decreasing principal
 
-  const totalPayments = years * paymentsPerAnnum;
+  const totalPayments = accrualOfPaymentsPerAnnum ? years * paymentsPerAnnum : 1;
   const ratePerPeriod = rate / paymentsPerAnnum;
   const multiplierTotal = Math.pow(1 + rate, years);
   const multiplierPerPeriod = 1 + ratePerPeriod;
@@ -70,13 +70,13 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
   let currentBalance = principal;
 
   for (let i = 0; i < years; i++) {
-    const payments: number[] = [];
+    const monthlyBalance: number[] = [];
     if (i > 0) {
       // prevBalance = interestMatrix.get(`${i}`)?.[paymentsPerAnnum - 1] ?? principal;
       prevBalance = interestMatrix.get(`${i}`)![paymentsPerAnnum - 1];
     }
     const interestThisYear = prevBalance * rate;
-    const interestparts: number[] = [];
+    const interestParts: number[] = [];
 
     if (!accrualOfPaymentsPerAnnum) interestPerAnnum.push(interestThisYear);
 
@@ -86,20 +86,20 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
         const newBalanceWithAccrual = prevBalance + amountPerAnnum / paymentsPerAnnum;
         const interest = newBalanceWithAccrual * ratePerPeriod;
         prevBalance = prevBalance + interest + amountPerAnnum / paymentsPerAnnum;
-        interestparts.push(interest);
+        interestParts.push(interest);
       } else {
         const interest = interestThisYear / paymentsPerAnnum;
         prevBalance = prevBalance + interest;
       }
-      payments.push(Number(prevBalance.toFixed(2)));
+      monthlyBalance.push(Number(prevBalance.toFixed(2)));
     }
 
     if (accrualOfPaymentsPerAnnum) {
-      const totalInterestForYear = interestparts.reduce((a, b) => a + b, 0);
+      const totalInterestForYear = interestParts.reduce((a, b) => a + b, 0);
       interestPerAnnum.push(totalInterestForYear);
     }
 
-    interestMatrix.set(`${i + 1}`, payments);
+    interestMatrix.set(`${i + 1}`, monthlyBalance);
   }
   if (currentPositionInYears) {
     // TODO a better way to check undefined map values
