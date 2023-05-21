@@ -52,12 +52,17 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     rate = rate / 100;
   }
 
+  // 1. calculate compound interest of a lump sum over time
+  // 2. calculate compound interest with additional contributions
+  // 3. calculate compound interest with a decreasing principal
+
   const totalPayments = years * paymentsPerAnnum;
   const ratePerPeriod = rate / paymentsPerAnnum;
   const multiplierTotal = Math.pow(1 + rate, years);
   const multiplierPerPeriod = 1 + ratePerPeriod;
 
-  const totalInvestment = principal + amountPerAnnum * years;
+  const totalInvestment = accrualOfPaymentsPerAnnum ? principal + amountPerAnnum * years : principal + amountPerAnnum;
+
   const interestPerAnnum: number[] = [];
   const interestMatrix = new Map<string, number[]>();
 
@@ -104,6 +109,8 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     currentBalance = interestMatrix.get(`${years}`)![paymentsPerAnnum - 1];
   }
 
+  const totalInterest = interestPerAnnum.reduce((a, b) => a + b, 0);
+
   const endBalance = accrualOfPaymentsPerAnnum
     ? interestMatrix.get(`${years}`)![paymentsPerAnnum - 1]
     : principal * multiplierTotal;
@@ -122,6 +129,7 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     interestMatrix,
     interestPerAnnum,
     currentBalance,
+    totalInterest,
     endBalance,
     accrualOfPaymentsPerAnnum
   };
