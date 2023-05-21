@@ -1,16 +1,9 @@
 export const compoundInterestOverYears = (principal: number, rate: number, years: number): number => {
-  console.log("calculating compound interest..");
-  console.log("principal: ", principal);
-  console.log("rate: ", rate);
-  console.log("years: ", years);
-
   if (rate >= 1) {
     rate = rate / 100;
-    console.log("updated rate: ", rate);
   }
 
   const multiplier = Math.pow(1 + rate, years);
-  console.log("pow: ", multiplier);
 
   return principal * multiplier;
 };
@@ -18,19 +11,19 @@ export const compoundInterestOverYears = (principal: number, rate: number, years
 export const calcInvestmentWithInterest = (
   principal: number,
   rate: number,
-  time: number,
-  paymentFrequency: number,
+  years: number,
+  paymentsPerAnnum: number,
   amountPerAnnum: number
 ) => {
-  const balance = compoundInterestOverYears(principal, rate, time);
-  const totalInvestment = principal + amountPerAnnum * time;
-  const totalPayments = time * paymentFrequency;
+  const finalBalance = compoundInterestOverYears(principal, rate, years);
+  const totalInvestment = principal + amountPerAnnum * years;
+  const totalPayments = years * paymentsPerAnnum;
   return {
     principal,
-    balance,
+    finalBalance,
     totalPayments,
     totalInvestment,
-    totalInterest: balance - totalInvestment
+    totalInterest: finalBalance - totalInvestment
   };
 };
 
@@ -48,18 +41,30 @@ export const compoundInterestPerPeriod = (
 
   const totalPayments = years * paymentsPerAnnum;
   const ratePerPeriod = rate / paymentsPerAnnum;
-  const multiplierPerAnnum = Math.pow(1 + rate, years);
-  const multiplierPerPeriod = Math.pow(1 + ratePerPeriod, totalPayments / years);
+  const multiplierTotal = Math.pow(1 + rate, years);
+  const multiplierPerPeriod = 1 + ratePerPeriod;
 
   const totalInvestment = principal + amountPerAnnum * years;
+  const interestPerAnnum: number[] = [];
 
-  const paymentsMatrix = [];
+  const interestMatrix = new Map<string, number[]>();
+  let prevBalance = principal;
+  let currentBalance = principal;
   for (let i = 0; i < years; i++) {
-    const payments = [];
-    for (let j = 0; j < paymentsPerAnnum; j++) {
-      payments.push(principal * Math.pow(1 + ratePerPeriod, j));
+    const payments: number[] = [];
+    if (i > 0) {
+      prevBalance = interestMatrix.get(`${i}`)![paymentsPerAnnum - 1];
     }
-    paymentsMatrix.push(payments);
+    const interestThisYear = prevBalance * rate;
+    currentBalance = prevBalance + interestThisYear;
+    interestPerAnnum.push(interestThisYear);
+
+    for (let p = 0; p < paymentsPerAnnum; p++) {
+      const interest = interestThisYear / paymentsPerAnnum;
+      prevBalance = prevBalance + interest;
+      payments.push(Number(prevBalance.toFixed(2)));
+    }
+    interestMatrix.set(`${i + 1}`, payments);
   }
 
   return {
@@ -69,10 +74,11 @@ export const compoundInterestPerPeriod = (
     paymentsPerAnnum,
     totalPayments,
     ratePerPeriod,
-    multiplierPerAnnum,
+    multiplierTotal,
     multiplierPerPeriod,
     totalInvestment,
-    // paymentsMatrix,
-    endBalance: principal * multiplierPerAnnum
+    interestMatrix,
+    currentBalance,
+    endBalance: principal * multiplierTotal
   };
 };
