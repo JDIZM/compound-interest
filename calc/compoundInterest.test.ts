@@ -21,7 +21,10 @@ describe("compoundInterestPerPeriod", () => {
     const result = compoundInterestPerPeriod(250_000, 7.8, 29, 12, 12_000);
     expect(result).toMatchObject(
       expect.objectContaining({
-        currentBalance: 2207415.46872,
+        accrualOfPaymentsPerAnnum: false,
+        currentBalance: 2207415.47,
+        currentPositionInYears: undefined,
+        // currentBalance: 2207415.46872,
         endBalance: 2207415.4267796557,
         paymentsPerAnnum: 12,
         totalPayments: 348,
