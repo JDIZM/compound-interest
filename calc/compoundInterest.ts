@@ -27,20 +27,26 @@ export const calcInvestmentWithInterest = (
   };
 };
 
-interface IOptions {
+export interface InterestOptions {
+  principal: number;
+  rate: number;
+  years: number;
+  paymentsPerAnnum?: number;
+  amountPerAnnum?: number;
   accrualOfPaymentsPerAnnum?: boolean;
+  currentPositionInYears?: number;
 }
-// TODO accrual of paymentsPerAnnum
-export const compoundInterestPerPeriod = (
-  principal: number,
-  rate: number,
-  years: number,
-  paymentsPerAnnum: number,
-  amountPerAnnum: number,
-  currentPositionInYears?: number,
-  accrualOfPaymentsPerAnnum = false,
-  options?: IOptions // TODO refactor to use options
-) => {
+
+export const compoundInterestPerPeriod = (options: InterestOptions) => {
+  let { rate } = options;
+  const {
+    principal,
+    years,
+    paymentsPerAnnum = 1,
+    amountPerAnnum = 0,
+    accrualOfPaymentsPerAnnum = false,
+    currentPositionInYears
+  } = options;
   // if rate is provided as a percentage, convert to decimal
   if (rate >= 1) {
     rate = rate / 100;
@@ -74,7 +80,6 @@ export const compoundInterestPerPeriod = (
       if (accrualOfPaymentsPerAnnum) {
         const newBalanceWithAccrual = prevBalance + amountPerAnnum / paymentsPerAnnum;
         const interest = newBalanceWithAccrual * ratePerPeriod;
-        console.log("interest", interest);
         prevBalance = prevBalance + interest + amountPerAnnum / paymentsPerAnnum;
         interestparts.push(interest);
       } else {
@@ -86,7 +91,6 @@ export const compoundInterestPerPeriod = (
 
     if (accrualOfPaymentsPerAnnum) {
       const totalInterestForYear = interestparts.reduce((a, b) => a + b, 0);
-      console.log("totalInterestForYear", totalInterestForYear);
       interestPerAnnum.push(totalInterestForYear);
     }
 
@@ -114,7 +118,7 @@ export const compoundInterestPerPeriod = (
     ratePerPeriod,
     multiplierTotal,
     multiplierPerPeriod,
-    totalInvestment,
+    totalInvestment, // TODO refactor to totalInvestment
     interestMatrix,
     interestPerAnnum,
     currentBalance,

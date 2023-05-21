@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compoundInterestOverYears, compoundInterestPerPeriod } from "./compoundInterest";
+import { compoundInterestOverYears, compoundInterestPerPeriod, InterestOptions } from "./compoundInterest";
 
 describe("compoundInterestOverYears", () => {
   it("should calc interest with a decimal rate over 1 year", () => {
@@ -18,7 +18,14 @@ describe("compoundInterestOverYears", () => {
 
 describe("compoundInterestPerPeriod", () => {
   it("should calc compound interest over multiple years", () => {
-    const result = compoundInterestPerPeriod(250_000, 7.8, 29, 12, 12_000);
+    const options: InterestOptions = {
+      principal: 250_000,
+      rate: 7.8,
+      years: 29,
+      paymentsPerAnnum: 12,
+      amountPerAnnum: 12_000
+    };
+    const result = compoundInterestPerPeriod(options);
     expect(result).toMatchObject(
       expect.objectContaining({
         accrualOfPaymentsPerAnnum: false,
@@ -32,5 +39,87 @@ describe("compoundInterestPerPeriod", () => {
         totalInvestment: 598000
       })
     );
+  });
+
+  it("when default options are supplied", () => {
+    // const result = compoundInterestPerPeriod({
+    //   principal: 250_000,
+    //   rate: 7.8,
+    //   years: 29
+    // });
+  });
+
+  it('when "accrualOfPaymentsPerAnnum" is true', () => {
+    const options: InterestOptions = {
+      principal: 250_000,
+      rate: 7.8,
+      years: 29,
+      paymentsPerAnnum: 12,
+      amountPerAnnum: 12_000,
+      accrualOfPaymentsPerAnnum: true
+    };
+    const result = compoundInterestPerPeriod(options);
+  });
+
+  it("when currentPositionInYears is supplied", () => {
+    const options: InterestOptions = {
+      principal: 250_000,
+      rate: 7.8,
+      years: 29,
+      paymentsPerAnnum: 12,
+      amountPerAnnum: 12_000,
+      currentPositionInYears: 5,
+      accrualOfPaymentsPerAnnum: false
+    };
+    const result = compoundInterestPerPeriod(options);
+  });
+
+  it("when paymentsPerAnnum is 1", () => {
+    const options: InterestOptions = {
+      principal: 250_000,
+      rate: 7.8,
+      years: 29,
+      paymentsPerAnnum: 1,
+      amountPerAnnum: 12_000,
+      currentPositionInYears: 5,
+      accrualOfPaymentsPerAnnum: false
+    };
+    const result = compoundInterestPerPeriod(options);
+  });
+
+  it("when there are more than one paymentsPerAnnum", () => {
+    const options: InterestOptions = {
+      principal: 250_000,
+      rate: 7.8,
+      years: 29,
+      paymentsPerAnnum: 12,
+      amountPerAnnum: 12_000,
+      currentPositionInYears: 5,
+      accrualOfPaymentsPerAnnum: false
+    };
+    const result = compoundInterestPerPeriod(options);
+  });
+
+  it("when amount per annum is 0", () => {
+    const options: InterestOptions = {
+      principal: 500,
+      rate: 3.4,
+      years: 1,
+      paymentsPerAnnum: 12,
+      amountPerAnnum: 0,
+      accrualOfPaymentsPerAnnum: false
+    };
+    const result = compoundInterestPerPeriod(options);
+  });
+  it("when amount per annum is not 0 total investment should accrue correctly", () => {
+    const options: InterestOptions = {
+      principal: 500,
+      rate: 3.4,
+      years: 1,
+      paymentsPerAnnum: 12,
+      amountPerAnnum: 6_000,
+      accrualOfPaymentsPerAnnum: false
+    };
+    const result = compoundInterestPerPeriod(options);
   });
 });
