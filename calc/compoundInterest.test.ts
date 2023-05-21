@@ -6,7 +6,7 @@ describe("compoundInterestOverYears", () => {
     const result = compoundInterestOverYears(100, 0.1, 1);
     expect(result).toBe(110.00000000000001);
   });
-  it("should calc interest with a decimal rate and multiple years", () => {
+  it("should calc interest with a decimal rate over multiple years", () => {
     const result = compoundInterestOverYears(100, 0.1, 2);
     expect(result).toBe(121.00000000000001);
   });
@@ -17,9 +17,8 @@ describe("compoundInterestOverYears", () => {
 });
 
 describe("compoundInterestPerPeriod", () => {
-  it("should return the correct values", () => {
+  it("should calc compound interest over multiple years", () => {
     const result = compoundInterestPerPeriod(250_000, 7.8, 29, 12, 12_000);
-    // expect(result).toMatchInlineSnapshot('2207415.4267796557');
     expect(result).toMatchObject(
       expect.objectContaining({
         currentBalance: 2207415.46872,

@@ -78,6 +78,7 @@ export const compoundInterestPerPeriod = (
     multiplierPerPeriod,
     totalInvestment,
     interestMatrix,
+    interestPerAnnum,
     currentBalance,
     endBalance: principal * multiplierTotal
   };
