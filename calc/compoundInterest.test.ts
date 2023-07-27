@@ -12,7 +12,7 @@ describe("compoundInterestOverYears", () => {
   });
   it("should calc interest with a percentage over multiple years", () => {
     const result = compoundInterestOverYears(250_000, 7.8, 29);
-    expect(result).toMatchInlineSnapshot(`2207415.4267796557`);
+    expect(result).toBe(2207415.4267796557);
   });
 });
 
