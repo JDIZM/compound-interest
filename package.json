@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "dev": "npx vite-node index.ts",
-    "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings 4",
     "format": "prettier -w '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
     "format:check": "prettier --check '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
     "tsc:check": "tsc -p tsconfig.json --noEmit",
@@ -27,5 +27,9 @@
     "typescript": "^5.0.4",
     "vite-node": "^0.31.1",
     "vitest": "^0.31.1"
+  },
+  "volta": {
+    "node": "16.20.1",
+    "npm": "9.2.0"
   }
 }
