@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calcMortgage = exports.compoundInterestPerPeriod = exports.calcTotalPayments = exports.calcInvestmentWithInterest = exports.compoundInterestOverYears = void 0;
+exports.compoundInterestPerPeriod = exports.calcTotalPayments = exports.calcInvestmentWithInterest = exports.compoundInterestOverYears = void 0;
 const compoundInterestOverYears = (principal, rate, years) => {
     if (rate >= 1) {
         rate = rate / 100;
@@ -122,7 +122,4 @@ const compoundInterestPerPeriod = (options) => {
     };
 };
 exports.compoundInterestPerPeriod = compoundInterestPerPeriod;
-const calcMortgage = (options) => {
-};
-exports.calcMortgage = calcMortgage;
 //# sourceMappingURL=compoundInterest.js.map

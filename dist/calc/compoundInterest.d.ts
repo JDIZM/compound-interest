@@ -48,4 +48,3 @@ export declare const compoundInterestPerPeriod: (options: InterestOptions) => {
     accrualOfPaymentsPerAnnum: boolean;
     investmentType: "lumpSum" | "contribution" | "debtRepayment";
 };
-export declare const calcMortgage: (options: MortgageOptions) => void;
