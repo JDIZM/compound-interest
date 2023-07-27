@@ -181,6 +181,6 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
   };
 };
 
-export const calcMortgage = (options: MortgageOptions) => {
-  //
-};
+// export const calcMortgage = (options: MortgageOptions) => {
+//   //
+// };
