@@ -13,8 +13,9 @@ https://cameronnokes.com/blog/the-30-second-guide-to-publishing-a-typescript-pac
 ### Features
 
 - [x] 1. calculate compound interest of a lump sum over time
-- [ ] 2. calculate compound interest with additional contributions
-- [ ] 3. calculate compound interest with a decreasing principal
+- [x] 2. calculate compound interest with additional contributions
+- [x] 3. calculate compound interest with interest only payments towards the principal borrowed
+- [ ] 4. calculate compound interest with a decreasing principal
 
 There are a few options and circumstances to consider when calculating compound interest:
 
@@ -36,10 +37,11 @@ This calculator can also be used to calculate the future value of a present lump
 - `principal` The initial amount invested
 - `rate` The interest rate (or growth rate) per annum
 - `years` The number of years invested
-- `paymentsPerAnnum` The number of contribution payments per annum (eg 12 for monthly)
+- `paymentsPerAnnum` The number of contribution payments per annum (eg 12 for monthly) -- also used to show the interest balance per period?? so if you want the interest to show monthly for each year.
 - `amountPerAnnum` The amount of contributions per annum (eg 6_000 for 500 per month)
-- `accrualOfPaymentsPerAnnum` Whether the payments are accrued per annum or per period
+- `accrualOfPaymentsPerAnnum` If provided payments accrue interest per annum; Otherwise interest is only accrued on the principal payment.
 - `currentPositionInYears` The current position in years (eg 2 for the second year of the investment)
+- `debtRepayment` if provided this denotes that the principal is borrowed. `amountPerAnnum` will become the cost of paying off the principal over the duration and principal will be excluded from the `totalInvestment`. This is essentially an interest only payment and will be the only investment cost over the duration.
 
 ### Examples
 
@@ -63,4 +65,15 @@ const additionalContributions = compoundInterestPerPeriod({
   accrualOfPaymentsPerAnnum: true
 });
 console.log("additionalContributions", additionalContributions);
+
+// example interest only payment
+const valueOfHome = compoundInterestPerPeriod({
+  principal: 250_000,
+  rate: 7.8,
+  years: 1,
+  paymentsPerAnnum: 12,
+  amountPerAnnum: 12_000,
+  debtRepayment: true
+});
+console.log("valueOfHome", valueOfHome);
 ```
