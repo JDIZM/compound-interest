@@ -1,4 +1,11 @@
-import { compoundInterestOverYears } from "compound-interest";
+import { compoundInterestPerPeriod } from "compound-interest/index";
 
-const test = compoundInterestOverYears(100, 0.1, 1);
-console.log(test);
+const sevenYears = compoundInterestPerPeriod({
+  principal: 5_000,
+  rate: 7.8,
+  years: 30,
+  paymentsPerAnnum: 1,
+  amountPerAnnum: 18_000,
+  accrualOfPaymentsPerAnnum: true
+});
+console.log("sevenYears", sevenYears);

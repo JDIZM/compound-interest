@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "scripts": {
     "dev": "npx vite-node index.ts",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 4",
     "format": "prettier -w '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
     "format:check": "prettier --check '**/*.{js,ts,mjs,cjs,json,tsx,jsx}'",
     "tsc:check": "tsc -p tsconfig.json --noEmit",
-    "build": "tsc -p tsconfig.json",
+    "build:tsc": "rm -rf dist && tsc -p tsconfig.json",
+    "build:esm": "npm run tsc:check && rm -rf dist && node build.mjs",
     "test": "vitest"
   },
   "keywords": [],
