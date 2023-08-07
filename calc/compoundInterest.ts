@@ -75,14 +75,16 @@ export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type:
   }
 };
 
-// export const calcTotalInvestment = (options: InterestOptions) => {
-//   const { principal, years, paymentsPerAnnum = 1, amountPerAnnum = 0, accrualOfPaymentsPerAnnum = false } = options;
-//   const totalPayments = calcTotalPayments(years, paymentsPerAnnum, calcInvestmentType(options));
-//   if (accrualOfPaymentsPerAnnum) {
-//     return principal + amountPerAnnum * years;
-//   }
-//   return principal + amountPerAnnum * totalPayments;
-// }
+export const calcTotalInvestment = (options: InterestOptions, investmentType: InvestmentType) => {
+  const { principal, years, debtRepayment, amountPerAnnum = 0, accrualOfPaymentsPerAnnum = false } = options;
+  if (investmentType === "contribution") {
+    return principal + amountPerAnnum * years;
+  }
+  if (debtRepayment && !accrualOfPaymentsPerAnnum) {
+    return amountPerAnnum * years;
+  }
+  return principal + amountPerAnnum;
+};
 
 export const compoundInterestPerPeriod = (options: InterestOptions) => {
   let { rate } = options;
@@ -92,12 +94,15 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     paymentsPerAnnum = 1,
     amountPerAnnum = 0,
     accrualOfPaymentsPerAnnum = false,
-    currentPositionInYears,
-    debtRepayment = false
+    currentPositionInYears
   } = options;
   // if rate is provided as a percentage, convert to decimal
   if (rate >= 1) {
     rate = rate / 100;
+  }
+
+  if (options.debtRepayment && accrualOfPaymentsPerAnnum) {
+    throw new Error("Invalid option combination: debtRepayment and accrualOfPaymentsPerAnnum");
   }
 
   const investmentType = calcInvestmentType(options);
@@ -107,16 +112,7 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
   const multiplierTotal = Math.pow(1 + rate, years);
   const multiplierPerPeriod = 1 + ratePerPeriod;
 
-  // FIXME tidy up total investment calculation
-  let totalInvestment = accrualOfPaymentsPerAnnum ? principal + amountPerAnnum * years : principal + amountPerAnnum;
-
-  if (investmentType === "contribution") {
-    totalInvestment = principal + amountPerAnnum * years;
-  }
-
-  if (debtRepayment && !accrualOfPaymentsPerAnnum) {
-    totalInvestment = amountPerAnnum * years;
-  }
+  const totalInvestment = calcTotalInvestment(options, investmentType);
 
   const interestPerAnnum: number[] = [];
   const interestMatrix = new Map<string, number[]>();
