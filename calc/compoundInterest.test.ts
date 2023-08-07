@@ -255,6 +255,7 @@ describe("compoundInterestPerPeriod", () => {
           accrualOfPaymentsPerAnnum: true,
           currentPositionInYears: undefined,
           paymentsPerAnnum: 12,
+          years: 2,
           // totalPayments: 1,
           totalPayments: 24, // FIXME returning a single payment
           principal: 250_000,

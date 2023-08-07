@@ -29,6 +29,14 @@ export const calcInvestmentWithInterest = (
 
 export type InvestmentType = "lumpSum" | "contribution" | "debtRepayment" | "mortgage";
 
+export const calcInvestmentType = (options: InterestOptions): InvestmentType => {
+  if (options.accrualOfPaymentsPerAnnum) return "contribution";
+  if (options.amountPerAnnum && options.amountPerAnnum > 0 && !options.debtRepayment) return "contribution";
+  if (options.debtRepayment) return "debtRepayment";
+  if (options.mortgage) return "mortgage";
+  return "lumpSum";
+};
+
 export type MortgageOptions = {
   deposit: number;
   monthlyRepayment: number;
@@ -50,7 +58,7 @@ export interface InterestOptions {
   accrualOfPaymentsPerAnnum?: boolean;
   currentPositionInYears?: number;
   debtRepayment?: boolean;
-  mortgage?: MortgageOptions;
+  mortgage?: MortgageOptions; // TODO mortgage options
 }
 
 export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type: InvestmentType) => {
@@ -58,12 +66,23 @@ export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type:
   switch (type) {
     case "lumpSum":
       return 1;
+    case "mortgage":
+      throw new Error("Not implemented");
     case "contribution":
     case "debtRepayment":
     default:
       return years * paymentsPerAnnum;
   }
 };
+
+// export const calcTotalInvestment = (options: InterestOptions) => {
+//   const { principal, years, paymentsPerAnnum = 1, amountPerAnnum = 0, accrualOfPaymentsPerAnnum = false } = options;
+//   const totalPayments = calcTotalPayments(years, paymentsPerAnnum, calcInvestmentType(options));
+//   if (accrualOfPaymentsPerAnnum) {
+//     return principal + amountPerAnnum * years;
+//   }
+//   return principal + amountPerAnnum * totalPayments;
+// }
 
 export const compoundInterestPerPeriod = (options: InterestOptions) => {
   let { rate } = options;
@@ -81,16 +100,7 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     rate = rate / 100;
   }
 
-  let investmentType: InvestmentType = "lumpSum";
-
-  if (!accrualOfPaymentsPerAnnum) {
-    if (amountPerAnnum > 0) {
-      investmentType = "contribution";
-    }
-    if (debtRepayment) {
-      investmentType = "debtRepayment";
-    }
-  }
+  const investmentType = calcInvestmentType(options);
 
   const totalPayments = calcTotalPayments(years, paymentsPerAnnum, investmentType);
   const ratePerPeriod = rate / paymentsPerAnnum;
