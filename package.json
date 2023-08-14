@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.esm.js",
   "scripts": {
     "dev": "npx vite-node index.ts",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 4",
