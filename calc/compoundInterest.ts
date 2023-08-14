@@ -1,3 +1,5 @@
+import { InterestOptions, InvestmentType } from "../types/calculator";
+
 export const compoundInterestOverYears = (principal: number, rate: number, years: number): number => {
   if (rate >= 1) {
     rate = rate / 100;
@@ -27,8 +29,6 @@ export const calcInvestmentWithInterest = (
   };
 };
 
-export type InvestmentType = "lumpSum" | "contribution" | "debtRepayment" | "mortgage";
-
 export const calcInvestmentType = (options: InterestOptions): InvestmentType => {
   if (options.accrualOfPaymentsPerAnnum) return "contribution";
   if (options.amountPerAnnum && options.amountPerAnnum > 0 && !options.debtRepayment) return "contribution";
@@ -36,30 +36,6 @@ export const calcInvestmentType = (options: InterestOptions): InvestmentType => 
   if (options.mortgage) return "mortgage";
   return "lumpSum";
 };
-
-export type MortgageOptions = {
-  deposit: number;
-  monthlyRepayment: number;
-  interestRate: number;
-  years: number;
-  debtRepayment?: boolean;
-};
-
-export type InvestmentOptions = {
-  principal: number;
-};
-
-export interface InterestOptions {
-  principal: number;
-  rate: number;
-  years: number;
-  paymentsPerAnnum?: number;
-  amountPerAnnum?: number;
-  accrualOfPaymentsPerAnnum?: boolean;
-  currentPositionInYears?: number;
-  debtRepayment?: boolean;
-  mortgage?: MortgageOptions; // TODO mortgage options
-}
 
 export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type: InvestmentType) => {
   // TODO set single payment for a no contributions option
@@ -186,7 +162,3 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     investmentType
   };
 };
-
-// export const calcMortgage = (options: MortgageOptions) => {
-//   //
-// };

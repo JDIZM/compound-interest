@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { compoundInterestOverYears, compoundInterestPerPeriod, InterestOptions } from "./compoundInterest";
+import { compoundInterestOverYears, compoundInterestPerPeriod } from "./compoundInterest";
+import { InterestOptions } from "../types/calculator";
 
 describe("compoundInterestOverYears", () => {
   it("should calc interest with a decimal rate over 1 year", () => {
