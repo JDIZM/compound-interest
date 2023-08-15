@@ -1,11 +1,16 @@
-import { compoundInterestPerPeriod } from "compound-interest/index";
+import { compoundInterestPerPeriod } from "compound-interest";
 
-const sevenYears = compoundInterestPerPeriod({
-  principal: 5_000,
-  rate: 7.8,
-  years: 30,
-  paymentsPerAnnum: 1,
-  amountPerAnnum: 18_000,
-  accrualOfPaymentsPerAnnum: true
+// example interest only payment
+const valueOfHome = compoundInterestPerPeriod({
+  principal: 150_000,
+  rate: 4,
+  years: 5,
+  paymentsPerAnnum: 12,
+  amountPerAnnum: 12_000,
+  debtRepayment: {
+    interestRate: 6,
+    type: "interestOnly"
+  }
 });
-console.log("sevenYears", sevenYears);
+
+console.log("valueOfHome", valueOfHome);

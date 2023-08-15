@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { compoundInterestOverYears, compoundInterestPerPeriod } from "./compoundInterest";
-import { InterestOptions } from "../types/calculator";
+import { IOptions } from "../types/calculator";
 
 describe("compoundInterestOverYears", () => {
   it("should calc interest with a decimal rate over 1 year", () => {
@@ -17,10 +17,16 @@ describe("compoundInterestOverYears", () => {
   });
 });
 
+describe("calcInterestPayments", () => {
+  it("should calculate the monthly interest payments for a given interest rate", () => {
+    //
+  });
+});
+
 describe("compoundInterestPerPeriod", () => {
   describe("lumpSum", () => {
-    it("should calculate an invested principal over a single year with no contributions", () => {
-      const options: InterestOptions = {
+    it("should calculate a lump sum over a single year with no contributions", () => {
+      const options: IOptions = {
         principal: 500,
         rate: 3.4,
         years: 1,
@@ -53,8 +59,8 @@ describe("compoundInterestPerPeriod", () => {
       );
     });
 
-    it("should calculate an invested principal over multiple years with no contributions", () => {
-      const options: InterestOptions = {
+    it("should calculate a lump sum over multiple years with no contributions", () => {
+      const options: IOptions = {
         principal: 500,
         rate: 3.4,
         years: 2,
@@ -89,14 +95,16 @@ describe("compoundInterestPerPeriod", () => {
   });
 
   describe("debtRepayment", () => {
-    it("should calculate a borrowed principal over a single year with payments towards the principal", () => {
-      const options: InterestOptions = {
+    it("should calculate compound interest with a borrowed principal over a single year with interest only payments towards the principal", () => {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 1,
         paymentsPerAnnum: 12,
-        amountPerAnnum: 12_000,
-        debtRepayment: true
+        debtRepayment: {
+          interestRate: 6,
+          type: "interestOnly"
+        }
       };
       const result = compoundInterestPerPeriod(options);
       expect(result).toMatchObject(
@@ -110,25 +118,34 @@ describe("compoundInterestPerPeriod", () => {
           multiplierPerPeriod: 1.0065,
           multiplierTotal: 1.078,
           rate: 0.078,
-          totalInvestment: 12_000,
+          totalInvestment: 15_000,
           principal: 250_000,
           investmentType: "debtRepayment",
           interestMatrix: new Map([
             ["1", [251625, 253250, 254875, 256500, 258125, 259750, 261375, 263000, 264625, 266250, 267875, 269500]]
           ]),
           interestPerAnnum: [19500],
-          totalInterest: 19500
+          totalInterest: 19500,
+          remainingDebt: 250_000,
+          totalEquity: 19_500,
+          interestPayments: {
+            monthly: 1250,
+            period: 1250,
+            yearly: 15000
+          }
         })
       );
     });
-    it("should calculate a borrowed principal over multiple years with payments towards the principal", () => {
-      const options: InterestOptions = {
+    it("should calculate compound interest with a borrowed principal over multiple years with interest only payments towards the principal", () => {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 2,
         paymentsPerAnnum: 12,
-        amountPerAnnum: 12_000,
-        debtRepayment: true
+        debtRepayment: {
+          interestRate: 6,
+          type: "interestOnly"
+        }
       };
 
       const result = compoundInterestPerPeriod(options);
@@ -144,7 +161,7 @@ describe("compoundInterestPerPeriod", () => {
           multiplierPerPeriod: 1.0065,
           multiplierTotal: 1.1620840000000001,
           rate: 0.078,
-          totalInvestment: 24_000,
+          totalInvestment: 30_000,
           principal: 250_000,
           investmentType: "debtRepayment",
           interestMatrix: new Map([
@@ -152,7 +169,14 @@ describe("compoundInterestPerPeriod", () => {
             ["2", [271251.75, 273003.5, 274755.25, 276507, 278258.75, 280010.5, 281762.25, 283514, 285265.75, 287017.5]]
           ]),
           interestPerAnnum: [19500, 21021],
-          totalInterest: 40521
+          totalInterest: 40521,
+          remainingDebt: 250000,
+          totalEquity: 40521.00000000006,
+          interestPayments: {
+            yearly: 15000,
+            monthly: 1250,
+            period: 1250
+          }
         })
       );
     });
@@ -160,7 +184,7 @@ describe("compoundInterestPerPeriod", () => {
 
   describe("contribution", () => {
     it("should calculate an invested principal with monthly contributions over a single year", () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 1,
@@ -191,7 +215,7 @@ describe("compoundInterestPerPeriod", () => {
       );
     });
     it("should calculate an invested principal with monthly contributions over multiple years", () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -233,6 +257,7 @@ describe("compoundInterestPerPeriod", () => {
   });
 
   it("when default options are supplied", () => {
+    // TODO default options tests ?
     // const result = compoundInterestPerPeriod({
     //   principal: 250_000,
     //   rate: 7.8,
@@ -242,7 +267,7 @@ describe("compoundInterestPerPeriod", () => {
 
   describe("accrualOfPaymentsPerAnnum", () => {
     it('when "accrualOfPaymentsPerAnnum" is true', () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -257,8 +282,7 @@ describe("compoundInterestPerPeriod", () => {
           currentPositionInYears: undefined,
           paymentsPerAnnum: 12,
           years: 2,
-          // totalPayments: 1,
-          totalPayments: 24, // FIXME returning a single payment
+          totalPayments: 24,
           principal: 250_000,
           multiplierPerPeriod: 1.0065,
           multiplierTotal: 1.1620840000000001,
@@ -267,8 +291,7 @@ describe("compoundInterestPerPeriod", () => {
           currentBalance: 318_109.82,
           endBalance: 318_109.82,
           totalInterest: 44_109.82369477549,
-          // investmentType: "lumpSum",
-          investmentType: "contribution", // FIXME should be contribution
+          investmentType: "contribution",
           ratePerPeriod: 0.0065,
           interestMatrix: new Map([
             [
@@ -294,7 +317,7 @@ describe("compoundInterestPerPeriod", () => {
 
   describe("paymentsPerAnnum", () => {
     it("when paymentsPerAnnum is 1 it returns a breakdown of the balance for each year", () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -315,7 +338,7 @@ describe("compoundInterestPerPeriod", () => {
     });
 
     it("when there are more than one paymentsPerAnnum it returns a monthly breakdown of balance", () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 1,
@@ -336,7 +359,8 @@ describe("compoundInterestPerPeriod", () => {
   });
 
   it("when currentPositionInYears is supplied", () => {
-    const options: InterestOptions = {
+    // TODO currentPositionInYears
+    const options: IOptions = {
       principal: 250_000,
       rate: 7.8,
       years: 29,

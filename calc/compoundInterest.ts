@@ -1,4 +1,10 @@
-import { InterestOptions, InvestmentType } from "../types/calculator";
+import {
+  IOptions,
+  CompoundInterestResult,
+  InvestmentType,
+  DebtRepaymentResult,
+  DebtRepayment
+} from "../types/calculator";
 
 export const compoundInterestOverYears = (principal: number, rate: number, years: number): number => {
   if (rate >= 1) {
@@ -29,11 +35,16 @@ export const calcInvestmentWithInterest = (
   };
 };
 
-export const calcInvestmentType = (options: InterestOptions): InvestmentType => {
-  if (options.accrualOfPaymentsPerAnnum) return "contribution";
-  if (options.amountPerAnnum && options.amountPerAnnum > 0 && !options.debtRepayment) return "contribution";
-  if (options.debtRepayment) return "debtRepayment";
-  if (options.mortgage) return "mortgage";
+export const calcInvestmentType = (options: IOptions): InvestmentType => {
+  if ("debtRepayment" in options && options.debtRepayment) {
+    return "debtRepayment";
+  }
+  if ("amountPerAnnum" in options && options.amountPerAnnum && options.amountPerAnnum > 0) {
+    return "contribution";
+  }
+  if ("mortgage" in options && options.mortgage) {
+    return "mortgage";
+  }
   return "lumpSum";
 };
 
@@ -51,39 +62,70 @@ export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type:
   }
 };
 
-export const calcTotalInvestment = (options: InterestOptions, investmentType: InvestmentType) => {
-  const { principal, years, debtRepayment, amountPerAnnum = 0, accrualOfPaymentsPerAnnum = false } = options;
-  if (investmentType === "contribution") {
+export const calcTotalInvestment = (options: IOptions, investmentType: InvestmentType) => {
+  const { principal, years, paymentsPerAnnum = 1 } = options;
+
+  if (investmentType === "contribution" && "amountPerAnnum" in options) {
+    const { amountPerAnnum = 0 } = options;
     return principal + amountPerAnnum * years;
   }
-  if (debtRepayment && !accrualOfPaymentsPerAnnum) {
-    return amountPerAnnum * years;
+
+  if ("debtRepayment" in options && options.debtRepayment) {
+    if (options.debtRepayment.type === "interestOnly") {
+      const interestPayments = calcInterestPayments(principal, options.debtRepayment, paymentsPerAnnum);
+      return interestPayments.yearly * years;
+    }
   }
-  return principal + amountPerAnnum;
+
+  return principal;
 };
 
-export const compoundInterestPerPeriod = (options: InterestOptions) => {
+export const calcInterestPayments = (principal: number, debtRepayment: DebtRepayment, paymentsPerAnnum: number) => {
+  let rateOfBorrowing = debtRepayment.interestRate;
+  // if rate is provided as a percentage, convert to decimal
+  if (rateOfBorrowing >= 1) {
+    rateOfBorrowing = rateOfBorrowing / 100;
+  }
+  return {
+    yearly: principal * rateOfBorrowing,
+    monthly: (principal * rateOfBorrowing) / 12,
+    period: (principal * rateOfBorrowing) / paymentsPerAnnum
+  };
+};
+
+export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestResult => {
   let { rate } = options;
-  const {
-    principal,
-    years,
-    paymentsPerAnnum = 1,
-    amountPerAnnum = 0,
-    accrualOfPaymentsPerAnnum = false,
-    currentPositionInYears
-  } = options;
+  const { principal, years, paymentsPerAnnum = 1, currentPositionInYears } = options;
+
+  let amountPerAnnum = 0;
+  let accrualOfPaymentsPerAnnum = false;
+
+  if ("amountPerAnnum" in options && options.amountPerAnnum && options.amountPerAnnum > 0) {
+    amountPerAnnum = options.amountPerAnnum;
+  }
+
+  if ("accrualOfPaymentsPerAnnum" in options && options.accrualOfPaymentsPerAnnum) {
+    accrualOfPaymentsPerAnnum = options.accrualOfPaymentsPerAnnum;
+  }
+
   // if rate is provided as a percentage, convert to decimal
   if (rate >= 1) {
     rate = rate / 100;
   }
 
-  if (options.debtRepayment && accrualOfPaymentsPerAnnum) {
-    throw new Error("Invalid option combination: debtRepayment and accrualOfPaymentsPerAnnum");
+  if ("debtRepayment" in options) {
+    if (options.debtRepayment && accrualOfPaymentsPerAnnum) {
+      throw new Error("Invalid option combination: debtRepayment and accrualOfPaymentsPerAnnum");
+    }
+
+    if (options.debtRepayment && options.debtRepayment.type === "interestOnly") {
+      amountPerAnnum = 0;
+    }
   }
 
   const investmentType = calcInvestmentType(options);
-
   const totalPayments = calcTotalPayments(years, paymentsPerAnnum, investmentType);
+
   const ratePerPeriod = rate / paymentsPerAnnum;
   const multiplierTotal = Math.pow(1 + rate, years);
   const multiplierPerPeriod = 1 + ratePerPeriod;
@@ -99,7 +141,6 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
   for (let i = 0; i < years; i++) {
     const monthlyBalance: number[] = [];
     if (i > 0) {
-      // prevBalance = interestMatrix.get(`${i}`)?.[paymentsPerAnnum - 1] ?? principal;
       prevBalance = interestMatrix.get(`${i}`)![paymentsPerAnnum - 1];
     }
     const interestThisYear = prevBalance * rate;
@@ -147,7 +188,7 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     ? interestMatrix.get(`${years}`)![paymentsPerAnnum - 1]
     : principal * multiplierTotal;
 
-  const result = {
+  const result: CompoundInterestResult = {
     principal,
     rate,
     years,
@@ -166,5 +207,18 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     accrualOfPaymentsPerAnnum,
     investmentType
   };
+
+  if ("debtRepayment" in options) {
+    if (options.debtRepayment && options.debtRepayment.type === "interestOnly") {
+      const resultWithDebt: DebtRepaymentResult = {
+        ...result,
+        totalEquity: endBalance - principal,
+        remainingDebt: principal,
+        interestPayments: calcInterestPayments(principal, options.debtRepayment, paymentsPerAnnum)
+      };
+      return resultWithDebt;
+    }
+  }
+
   return result;
 };
