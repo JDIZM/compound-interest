@@ -128,12 +128,17 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
 
     interestMatrix.set(`${i + 1}`, monthlyBalance);
   }
+
+  if (!currentPositionInYears) {
+    const newBalance = interestMatrix.get(`${years}`);
+    if (!newBalance) throw new Error("Invalid currentBalance");
+    currentBalance = newBalance[paymentsPerAnnum - 1];
+  }
+
   if (currentPositionInYears) {
-    // TODO a better way to check undefined map values
-    // currentBalance = interestMatrix.get(`${currentPositionInYears}`)?.[paymentsPerAnnum - 1] ?? principal;
-    currentBalance = interestMatrix.get(`${currentPositionInYears}`)![paymentsPerAnnum - 1];
-  } else {
-    currentBalance = interestMatrix.get(`${years}`)![paymentsPerAnnum - 1];
+    const newBalance = interestMatrix.get(`${currentPositionInYears}`);
+    if (!newBalance) throw new Error("Invalid currentPositionInYears");
+    currentBalance = newBalance[paymentsPerAnnum - 1];
   }
 
   const totalInterest = interestPerAnnum.reduce((a, b) => a + b, 0);
@@ -142,7 +147,7 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     ? interestMatrix.get(`${years}`)![paymentsPerAnnum - 1]
     : principal * multiplierTotal;
 
-  return {
+  const result = {
     principal,
     rate,
     years,
@@ -161,4 +166,5 @@ export const compoundInterestPerPeriod = (options: InterestOptions) => {
     accrualOfPaymentsPerAnnum,
     investmentType
   };
+  return result;
 };
