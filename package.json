@@ -12,7 +12,7 @@
     "tsc:check": "tsc -p tsconfig.json --noEmit",
     "build:tsc": "rm -rf dist && tsc -p tsconfig.json",
     "build:esm": "npm run tsc:check && rm -rf dist && node build.mjs",
-    "test": "vitest"
+    "test": "vitest --run --coverage"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "@types/node": "^20.2.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
+    "@vitest/coverage-c8": "^0.33.0",
     "eslint": "^8.37.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-alias": "^1.1.2",
