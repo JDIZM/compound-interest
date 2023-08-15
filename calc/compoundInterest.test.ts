@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compoundInterestOverYears, compoundInterestPerPeriod } from "./compoundInterest";
+import { calcInterestPayments, compoundInterestOverYears, compoundInterestPerPeriod } from "./compoundInterest";
 import { IOptions } from "../types/calculator";
 
 describe("compoundInterestOverYears", () => {
@@ -19,7 +19,19 @@ describe("compoundInterestOverYears", () => {
 
 describe("calcInterestPayments", () => {
   it("should calculate the monthly interest payments for a given interest rate", () => {
-    //
+    const result = calcInterestPayments(
+      250_000,
+      {
+        interestRate: 6,
+        type: "interestOnly"
+      },
+      12
+    );
+    expect(result).toMatchObject({
+      monthly: 1250,
+      period: 1250,
+      yearly: 15000
+    });
   });
 });
 

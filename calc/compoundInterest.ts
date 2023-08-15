@@ -16,25 +16,6 @@ export const compoundInterestOverYears = (principal: number, rate: number, years
   return principal * multiplier;
 };
 
-export const calcInvestmentWithInterest = (
-  principal: number,
-  rate: number,
-  years: number,
-  paymentsPerAnnum: number,
-  amountPerAnnum: number
-) => {
-  const finalBalance = compoundInterestOverYears(principal, rate, years);
-  const totalInvestment = principal + amountPerAnnum * years;
-  const totalPayments = years * paymentsPerAnnum;
-  return {
-    principal,
-    finalBalance,
-    totalPayments,
-    totalInvestment,
-    totalInterest: finalBalance - totalInvestment
-  };
-};
-
 export const calcInvestmentType = (options: IOptions): InvestmentType => {
   if ("debtRepayment" in options && options.debtRepayment) {
     return "debtRepayment";
