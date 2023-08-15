@@ -30,7 +30,7 @@ export interface ContributionOptions extends LumpSumOptions {
 
 export interface DebtRepaymentOptions extends LumpSumOptions {
   currentPositionInYears?: number;
-  debtRepayment?: DebtRepayment;
+  debtRepayment: DebtRepayment;
 }
 
 export type IOptions = LumpSumOptions | ContributionOptions | DebtRepaymentOptions;

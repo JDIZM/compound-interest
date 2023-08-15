@@ -70,7 +70,7 @@ export const calcTotalInvestment = (options: IOptions, investmentType: Investmen
     return principal + amountPerAnnum * years;
   }
 
-  if ("debtRepayment" in options && options.debtRepayment) {
+  if ("debtRepayment" in options) {
     if (options.debtRepayment.type === "interestOnly") {
       const interestPayments = calcInterestPayments(principal, options.debtRepayment, paymentsPerAnnum);
       return interestPayments.yearly * years;
@@ -118,7 +118,7 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
       throw new Error("Invalid option combination: debtRepayment and accrualOfPaymentsPerAnnum");
     }
 
-    if (options.debtRepayment && options.debtRepayment.type === "interestOnly") {
+    if (options.debtRepayment.type === "interestOnly") {
       amountPerAnnum = 0;
     }
   }
@@ -170,12 +170,6 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     interestMatrix.set(`${i + 1}`, monthlyBalance);
   }
 
-  if (!currentPositionInYears) {
-    const newBalance = interestMatrix.get(`${years}`);
-    if (!newBalance) throw new Error("Invalid currentBalance");
-    currentBalance = newBalance[paymentsPerAnnum - 1];
-  }
-
   if (currentPositionInYears) {
     const newBalance = interestMatrix.get(`${currentPositionInYears}`);
     if (!newBalance) throw new Error("Invalid currentPositionInYears");
@@ -198,7 +192,7 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     ratePerPeriod,
     multiplierTotal,
     multiplierPerPeriod,
-    totalInvestment, // TODO refactor to totalInvestment
+    totalInvestment,
     interestMatrix,
     interestPerAnnum,
     currentBalance,
@@ -209,7 +203,7 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
   };
 
   if ("debtRepayment" in options) {
-    if (options.debtRepayment && options.debtRepayment.type === "interestOnly") {
+    if (options.debtRepayment.type === "interestOnly") {
       const resultWithDebt: DebtRepaymentResult = {
         ...result,
         totalEquity: endBalance - principal,

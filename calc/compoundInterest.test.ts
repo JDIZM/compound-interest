@@ -30,8 +30,7 @@ describe("compoundInterestPerPeriod", () => {
         principal: 500,
         rate: 3.4,
         years: 1,
-        paymentsPerAnnum: 12,
-        amountPerAnnum: 0
+        paymentsPerAnnum: 12
       };
 
       const result = compoundInterestPerPeriod(options);
@@ -39,7 +38,7 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentBalance: 517,
+          currentBalance: 500,
           currentPositionInYears: undefined,
           endBalance: 517,
           paymentsPerAnnum: 12,
@@ -64,15 +63,14 @@ describe("compoundInterestPerPeriod", () => {
         principal: 500,
         rate: 3.4,
         years: 2,
-        paymentsPerAnnum: 12,
-        amountPerAnnum: 0
+        paymentsPerAnnum: 12
       };
       const result = compoundInterestPerPeriod(options);
 
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentBalance: 534.58,
+          currentBalance: 500,
           currentPositionInYears: undefined,
           endBalance: 534.578,
           paymentsPerAnnum: 12,
@@ -111,7 +109,7 @@ describe("compoundInterestPerPeriod", () => {
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
           currentPositionInYears: undefined,
-          currentBalance: 269_500,
+          currentBalance: 250_000,
           endBalance: 269_500,
           paymentsPerAnnum: 12,
           totalPayments: 12,
@@ -154,7 +152,7 @@ describe("compoundInterestPerPeriod", () => {
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
           currentPositionInYears: undefined,
-          currentBalance: 290_521,
+          currentBalance: 250_000,
           endBalance: 290_521.00000000006,
           paymentsPerAnnum: 12,
           totalPayments: 24,
@@ -203,7 +201,7 @@ describe("compoundInterestPerPeriod", () => {
           principal: 250_000,
           rate: 0.078,
           totalInvestment: 262_000,
-          currentBalance: 269_500,
+          currentBalance: 250_000,
           totalInterest: 19_500,
           endBalance: 269_500,
           investmentType: "contribution",
@@ -236,7 +234,7 @@ describe("compoundInterestPerPeriod", () => {
           multiplierTotal: 1.1620840000000001,
           rate: 0.078,
           totalInvestment: 274_000,
-          currentBalance: 290_521,
+          currentBalance: 250_000,
           endBalance: 290_521.00000000006,
           totalInterest: 40_521,
           investmentType: "contribution",
@@ -288,7 +286,7 @@ describe("compoundInterestPerPeriod", () => {
           multiplierTotal: 1.1620840000000001,
           rate: 0.078,
           totalInvestment: 274_000,
-          currentBalance: 318_109.82,
+          currentBalance: 250_000,
           endBalance: 318_109.82,
           totalInterest: 44_109.82369477549,
           investmentType: "contribution",
@@ -358,16 +356,46 @@ describe("compoundInterestPerPeriod", () => {
     });
   });
 
-  it("when currentPositionInYears is supplied", () => {
-    // TODO currentPositionInYears
-    const options: IOptions = {
-      principal: 250_000,
-      rate: 7.8,
-      years: 29,
-      paymentsPerAnnum: 12,
-      amountPerAnnum: 12_000,
-      currentPositionInYears: 5
-    };
-    const result = compoundInterestPerPeriod(options);
+  describe("currentPositionInYears", () => {
+    it("when currentPositionInYears is supplied it returns the correct currentBalance for the end of the first of the investment", () => {
+      const options: IOptions = {
+        principal: 250_000,
+        rate: 7.8,
+        years: 25,
+        paymentsPerAnnum: 12,
+        amountPerAnnum: 12_000,
+        currentPositionInYears: 1
+      };
+      const result = compoundInterestPerPeriod(options);
+      expect(result).toMatchObject(
+        expect.objectContaining({
+          currentBalance: 269500,
+          totalInterest: 1384590.74754,
+          endBalance: 1634590.7235901707,
+          accrualOfPaymentsPerAnnum: false,
+          investmentType: "contribution"
+        })
+      );
+    });
+    it("when currentPositionInYears is supplied it returns the correct currentBalance for end of the 5th year of investment", () => {
+      const options: IOptions = {
+        principal: 250_000,
+        rate: 7.8,
+        years: 25,
+        paymentsPerAnnum: 12,
+        amountPerAnnum: 12_000,
+        currentPositionInYears: 5
+      };
+      const result = compoundInterestPerPeriod(options);
+      expect(result).toMatchObject(
+        expect.objectContaining({
+          currentBalance: 363943.38,
+          totalInterest: 1384590.74754,
+          endBalance: 1634590.7235901707,
+          accrualOfPaymentsPerAnnum: false,
+          investmentType: "contribution"
+        })
+      );
+    });
   });
 });
