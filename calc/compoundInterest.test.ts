@@ -39,7 +39,7 @@ describe("compoundInterestPerPeriod", () => {
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
           currentBalance: 500,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           endBalance: 517,
           paymentsPerAnnum: 12,
           totalPayments: 1,
@@ -71,7 +71,7 @@ describe("compoundInterestPerPeriod", () => {
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
           currentBalance: 500,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           endBalance: 534.578,
           paymentsPerAnnum: 12,
           totalPayments: 1,
@@ -108,7 +108,7 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           currentBalance: 250_000,
           endBalance: 269_500,
           paymentsPerAnnum: 12,
@@ -151,7 +151,7 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           currentBalance: 250_000,
           endBalance: 290_521.00000000006,
           paymentsPerAnnum: 12,
@@ -195,7 +195,7 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           paymentsPerAnnum: 12,
           totalPayments: 12,
           principal: 250_000,
@@ -226,7 +226,7 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           paymentsPerAnnum: 12,
           totalPayments: 24,
           principal: 250_000,
@@ -277,7 +277,7 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: true,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           paymentsPerAnnum: 12,
           years: 2,
           totalPayments: 24,

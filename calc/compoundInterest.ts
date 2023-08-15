@@ -186,7 +186,7 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     principal,
     rate,
     years,
-    currentPositionInYears,
+    currentPositionInYears: currentPositionInYears || 0,
     paymentsPerAnnum,
     totalPayments,
     ratePerPeriod,
