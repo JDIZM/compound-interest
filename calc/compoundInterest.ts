@@ -1,10 +1,4 @@
-import {
-  IOptions,
-  CompoundInterestResult,
-  InvestmentType,
-  DebtRepaymentResult,
-  DebtRepayment
-} from "../types/calculator";
+import { IOptions, CompoundInterestResult, InvestmentType, DebtRepaymentResult } from "../types/calculator";
 
 export const compoundInterestOverYears = (principal: number, rate: number, years: number): number => {
   if (rate >= 1) {
@@ -30,7 +24,6 @@ export const calcInvestmentType = (options: IOptions): InvestmentType => {
 };
 
 export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type: InvestmentType) => {
-  // TODO set single payment for a no contributions option
   switch (type) {
     case "lumpSum":
       return 1;
@@ -43,6 +36,20 @@ export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type:
   }
 };
 
+// The PMT function calculates the periodic payment
+// for an annuity investment based on constant-amount periodic payments
+// and a constant interest rate.
+export const PMT = (mir: number, nper: number, pv: number, fv = 0, type: 0 | 1) => {
+  // mir - monthly interest rate in decimal form
+  // nper - number of periods (months)
+  // pv   - present value
+  // fv   - future value
+  // type - when the payments are due:
+  //    0: end of the period, e.g. end of month (default)
+  //    1: beginning of period
+  return (mir * (pv * Math.pow(1 + mir, nper) + fv)) / ((1 + mir * type) * (Math.pow(1 + mir, nper) - 1));
+};
+
 export const calcTotalInvestment = (options: IOptions, investmentType: InvestmentType) => {
   const { principal, years, paymentsPerAnnum = 1 } = options;
 
@@ -53,16 +60,20 @@ export const calcTotalInvestment = (options: IOptions, investmentType: Investmen
 
   if ("debtRepayment" in options) {
     if (options.debtRepayment.type === "interestOnly") {
-      const interestPayments = calcInterestPayments(principal, options.debtRepayment, paymentsPerAnnum);
+      const interestPayments = calcInterestPayments(principal, options.debtRepayment.interestRate, paymentsPerAnnum);
       return interestPayments.yearly * years;
+    }
+
+    if (options.debtRepayment.type === "repayment") {
+      return PMT(options.debtRepayment.interestRate / 100 / 12, years * 12, principal, 0, 0) * 12 * years;
     }
   }
 
   return principal;
 };
 
-export const calcInterestPayments = (principal: number, debtRepayment: DebtRepayment, paymentsPerAnnum: number) => {
-  let rateOfBorrowing = debtRepayment.interestRate;
+export const calcInterestPayments = (principal: number, interestRate: number, paymentsPerAnnum: number) => {
+  let rateOfBorrowing = interestRate;
   // if rate is provided as a percentage, convert to decimal
   if (rateOfBorrowing >= 1) {
     rateOfBorrowing = rateOfBorrowing / 100;
@@ -98,10 +109,6 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     if (options.debtRepayment && accrualOfPaymentsPerAnnum) {
       throw new Error("Invalid option combination: debtRepayment and accrualOfPaymentsPerAnnum");
     }
-
-    if (options.debtRepayment.type === "interestOnly") {
-      amountPerAnnum = 0;
-    }
   }
 
   const investmentType = calcInvestmentType(options);
@@ -130,7 +137,6 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     if (!accrualOfPaymentsPerAnnum) interestPerAnnum.push(interestThisYear);
 
     for (let p = 0; p < paymentsPerAnnum; p++) {
-      // TODO dont calculate first month and principal
       if (accrualOfPaymentsPerAnnum) {
         const newBalanceWithAccrual = prevBalance + amountPerAnnum / paymentsPerAnnum;
         const interest = newBalanceWithAccrual * ratePerPeriod;
@@ -174,12 +180,13 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     multiplierTotal,
     multiplierPerPeriod,
     totalInvestment,
-    interestMatrix,
-    interestPerAnnum,
     currentBalance,
-    totalInterest,
     endBalance,
     accrualOfPaymentsPerAnnum,
+    // this is the interest accrued not the total interest paid
+    interestMatrix,
+    interestPerAnnum,
+    totalInterest,
     investmentType
   };
 
@@ -189,7 +196,19 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
         ...result,
         totalEquity: endBalance - principal,
         remainingDebt: principal,
-        interestPayments: calcInterestPayments(principal, options.debtRepayment, paymentsPerAnnum)
+        interestPayments: calcInterestPayments(principal, options.debtRepayment.interestRate, paymentsPerAnnum)
+      };
+      return resultWithDebt;
+    }
+
+    if (options.debtRepayment.type === "repayment") {
+      const resultWithDebt: DebtRepaymentResult = {
+        ...result,
+        totalEquity: endBalance,
+        remainingDebt: 0,
+        totalDebtPaid: totalInvestment - principal,
+        monthlyRepaymentAmount: PMT(options.debtRepayment.interestRate / 100 / 12, totalPayments, principal, 0, 0),
+        netInvestment: endBalance - totalInvestment
       };
       return resultWithDebt;
     }

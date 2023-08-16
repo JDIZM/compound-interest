@@ -21,7 +21,7 @@ For example, if you invest $1,000 today at a 7% annual interest rate, how much w
 - [x] 1. calculate compound interest of a lump sum over time
 - [x] 2. calculate compound interest with additional contributions
 - [x] 3. calculate compound interest with interest only payments towards the principal borrowed
-- [ ] 4. calculate compound interest with a decreasing principal
+- [x] 4. calculate compound interest with repayments towards the principal
 
 #### Mortgage
 

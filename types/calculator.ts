@@ -11,7 +11,7 @@ export type Mortgage = {
 // TODO additional debt repayment types
 export type DebtRepayment = {
   interestRate: number;
-  type: "interestOnly";
+  type: "interestOnly" | "repayment";
 };
 
 export interface LumpSumOptions {
@@ -39,17 +39,22 @@ export interface InterestResult {
   principal: number;
   rate: number;
   years: number;
+  // The amount of interest to compound per period
   ratePerPeriod: number;
+  // Payments
   accrualOfPaymentsPerAnnum: boolean;
   currentPositionInYears: undefined | number;
-  currentBalance: number;
-  endBalance: number;
   paymentsPerAnnum: number;
   totalPayments: number;
+  // Compound interest multipliers
   multiplierPerPeriod: number;
   multiplierTotal: number;
-  totalInvestment: number;
+  // Investment
+  currentBalance: number; // current balance of the investment at the current position in years
+  endBalance: number; // this is the total value of the investment at the end of the period
+  totalInvestment: number; // the total amount invested
   investmentType: InvestmentType;
+  // Compound interest accrued not the total interest paid
   interestMatrix: Map<string, number[]>;
   interestPerAnnum: number[];
   totalInterest: number;
@@ -58,11 +63,14 @@ export interface InterestResult {
 export interface DebtRepaymentResult extends InterestResult {
   remainingDebt: number;
   totalEquity: number;
-  interestPayments: {
+  interestPayments?: {
     yearly: number;
     monthly: number;
     period: number;
   };
+  totalDebtPaid?: number;
+  monthlyRepaymentAmount?: number;
+  netInvestment?: number;
 }
 
 export type CompoundInterestResult = InterestResult | DebtRepaymentResult;
