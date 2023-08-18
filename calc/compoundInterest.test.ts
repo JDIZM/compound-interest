@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { compoundInterestOverYears, compoundInterestPerPeriod } from "./compoundInterest";
-import { InterestOptions } from "../types/calculator";
+import { PMT, calcInterestPayments, compoundInterestOverYears, compoundInterestPerPeriod } from "./compoundInterest";
+import { IOptions } from "../types/calculator";
 
 describe("compoundInterestOverYears", () => {
   it("should calc interest with a decimal rate over 1 year", () => {
@@ -17,15 +17,36 @@ describe("compoundInterestOverYears", () => {
   });
 });
 
+describe("PMT", () => {
+  const years = 30;
+  const rate = 0.05;
+  const principal = 240_000;
+
+  it("should calculate the monthly payment for a loan", () => {
+    const result = PMT(rate / 12, years * 12, principal, 0, 0);
+    expect(result).toBe(1288.3718952291354);
+  });
+});
+
+describe("calcInterestPayments", () => {
+  it("should calculate the monthly interest payments for a given interest rate", () => {
+    const result = calcInterestPayments(250_000, 6, 12);
+    expect(result).toMatchObject({
+      monthly: 1250,
+      period: 1250,
+      yearly: 15000
+    });
+  });
+});
+
 describe("compoundInterestPerPeriod", () => {
   describe("lumpSum", () => {
-    it("should calculate an invested principal over a single year with no contributions", () => {
-      const options: InterestOptions = {
+    it("should calculate a lump sum over a single year with no contributions", () => {
+      const options: IOptions = {
         principal: 500,
         rate: 3.4,
         years: 1,
-        paymentsPerAnnum: 12,
-        amountPerAnnum: 0
+        paymentsPerAnnum: 12
       };
 
       const result = compoundInterestPerPeriod(options);
@@ -33,8 +54,8 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentBalance: 517,
-          currentPositionInYears: undefined,
+          currentBalance: 500,
+          currentPositionInYears: 0,
           endBalance: 517,
           paymentsPerAnnum: 12,
           totalPayments: 1,
@@ -53,21 +74,20 @@ describe("compoundInterestPerPeriod", () => {
       );
     });
 
-    it("should calculate an invested principal over multiple years with no contributions", () => {
-      const options: InterestOptions = {
+    it("should calculate a lump sum over multiple years with no contributions", () => {
+      const options: IOptions = {
         principal: 500,
         rate: 3.4,
         years: 2,
-        paymentsPerAnnum: 12,
-        amountPerAnnum: 0
+        paymentsPerAnnum: 12
       };
       const result = compoundInterestPerPeriod(options);
 
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentBalance: 534.58,
-          currentPositionInYears: undefined,
+          currentBalance: 500,
+          currentPositionInYears: 0,
           endBalance: 534.578,
           paymentsPerAnnum: 12,
           totalPayments: 1,
@@ -89,78 +109,175 @@ describe("compoundInterestPerPeriod", () => {
   });
 
   describe("debtRepayment", () => {
-    it("should calculate a borrowed principal over a single year with payments towards the principal", () => {
-      const options: InterestOptions = {
-        principal: 250_000,
-        rate: 7.8,
-        years: 1,
-        paymentsPerAnnum: 12,
-        amountPerAnnum: 12_000,
-        debtRepayment: true
-      };
-      const result = compoundInterestPerPeriod(options);
-      expect(result).toMatchObject(
-        expect.objectContaining({
-          accrualOfPaymentsPerAnnum: false,
-          currentPositionInYears: undefined,
-          currentBalance: 269_500,
-          endBalance: 269_500,
-          paymentsPerAnnum: 12,
-          totalPayments: 12,
-          multiplierPerPeriod: 1.0065,
-          multiplierTotal: 1.078,
-          rate: 0.078,
-          totalInvestment: 12_000,
-          principal: 250_000,
-          investmentType: "debtRepayment",
-          interestMatrix: new Map([
-            ["1", [251625, 253250, 254875, 256500, 258125, 259750, 261375, 263000, 264625, 266250, 267875, 269500]]
-          ]),
-          interestPerAnnum: [19500],
-          totalInterest: 19500
-        })
-      );
+    const options: IOptions = {
+      principal: 250_000,
+      rate: 7.8,
+      years: 1,
+      paymentsPerAnnum: 12,
+      debtRepayment: {
+        interestRate: 6,
+        type: "interestOnly"
+      }
+    };
+
+    describe("interestOnly", () => {
+      it("should calculate compound interest with a borrowed principal over a single year with interest only payments towards the principal", () => {
+        const result = compoundInterestPerPeriod(options);
+        expect(result).toMatchObject(
+          expect.objectContaining({
+            accrualOfPaymentsPerAnnum: false,
+            currentPositionInYears: 0,
+            currentBalance: 250_000,
+            endBalance: 269_500,
+            paymentsPerAnnum: 12,
+            totalPayments: 12,
+            multiplierPerPeriod: 1.0065,
+            multiplierTotal: 1.078,
+            rate: 0.078,
+            totalInvestment: 15_000,
+            principal: 250_000,
+            investmentType: "debtRepayment",
+            interestMatrix: new Map([
+              ["1", [251625, 253250, 254875, 256500, 258125, 259750, 261375, 263000, 264625, 266250, 267875, 269500]]
+            ]),
+            interestPerAnnum: [19500],
+            totalInterest: 19500,
+            remainingDebt: 250_000,
+            totalEquity: 19_500,
+            interestPayments: {
+              monthly: 1250,
+              period: 1250,
+              yearly: 15000
+            }
+          })
+        );
+      });
+      it("should calculate compound interest with a borrowed principal over multiple years with interest only payments towards the principal", () => {
+        options.years = 2;
+
+        const result = compoundInterestPerPeriod(options);
+
+        expect(result).toMatchObject(
+          expect.objectContaining({
+            accrualOfPaymentsPerAnnum: false,
+            currentPositionInYears: 0,
+            currentBalance: 250_000,
+            endBalance: 290_521.00000000006,
+            paymentsPerAnnum: 12,
+            totalPayments: 24,
+            multiplierPerPeriod: 1.0065,
+            multiplierTotal: 1.1620840000000001,
+            rate: 0.078,
+            totalInvestment: 30_000,
+            principal: 250_000,
+            investmentType: "debtRepayment",
+            interestMatrix: new Map([
+              ["1", [251625, 253250, 254875, 256500, 258125, 259750, 261375, 263000, 264625, 266250, 267875, 269500]],
+              [
+                "2",
+                [271251.75, 273003.5, 274755.25, 276507, 278258.75, 280010.5, 281762.25, 283514, 285265.75, 287017.5]
+              ]
+            ]),
+            interestPerAnnum: [19500, 21021],
+            totalInterest: 40521,
+            remainingDebt: 250000,
+            totalEquity: 40521.00000000006,
+            interestPayments: {
+              yearly: 15000,
+              monthly: 1250,
+              period: 1250
+            }
+          })
+        );
+      });
     });
-    it("should calculate a borrowed principal over multiple years with payments towards the principal", () => {
-      const options: InterestOptions = {
-        principal: 250_000,
-        rate: 7.8,
-        years: 2,
+
+    describe("repayment", () => {
+      const options: IOptions = {
+        principal: 240_000,
+        rate: 4,
+        years: 30,
         paymentsPerAnnum: 12,
-        amountPerAnnum: 12_000,
-        debtRepayment: true
+        debtRepayment: {
+          interestRate: 6,
+          type: "repayment"
+        }
       };
+      it("should calculate compound interest with a borrowed principal over a single year with repayments towards the principal", () => {
+        options.years = 1;
 
-      const result = compoundInterestPerPeriod(options);
+        const result = compoundInterestPerPeriod(options);
 
-      expect(result).toMatchObject(
-        expect.objectContaining({
-          accrualOfPaymentsPerAnnum: false,
-          currentPositionInYears: undefined,
-          currentBalance: 290_521,
-          endBalance: 290_521.00000000006,
+        expect(result).toMatchObject(
+          expect.objectContaining({
+            investmentType: "debtRepayment",
+            endBalance: 249600,
+            totalDebtPaid: 7871.317556397233,
+            totalEquity: 249600,
+            totalInterest: 9600,
+            totalInvestment: 247871.31755639723,
+            currentBalance: 240000,
+            remainingDebt: 0,
+            monthlyRepaymentAmount: 20655.943129699768
+          })
+        );
+      });
+
+      it("should calculate compound interest with a borrowed principal over multiple years with repayments towards the principal", () => {
+        options.years = 30;
+
+        const result = compoundInterestPerPeriod(options);
+
+        expect(result).toMatchObject(
+          expect.objectContaining({
+            investmentType: "debtRepayment",
+            endBalance: 778415.40240661,
+            totalDebtPaid: 278011.65373198205,
+            totalEquity: 778415.40240661,
+            totalInterest: 538415.3744000001,
+            totalInvestment: 518011.65373198205,
+            currentBalance: 240000,
+            remainingDebt: 0,
+            monthlyRepaymentAmount: 1438.9212603666167,
+            netInvestment: 260403.74867462792
+          })
+        );
+      });
+      it("should calculate a borrowed principal over multiple years with repayments towards the principal with no compound interest", () => {
+        const options: IOptions = {
+          principal: 240_000,
+          rate: 0,
+          years: 30,
           paymentsPerAnnum: 12,
-          totalPayments: 24,
-          multiplierPerPeriod: 1.0065,
-          multiplierTotal: 1.1620840000000001,
-          rate: 0.078,
-          totalInvestment: 24_000,
-          principal: 250_000,
-          investmentType: "debtRepayment",
-          interestMatrix: new Map([
-            ["1", [251625, 253250, 254875, 256500, 258125, 259750, 261375, 263000, 264625, 266250, 267875, 269500]],
-            ["2", [271251.75, 273003.5, 274755.25, 276507, 278258.75, 280010.5, 281762.25, 283514, 285265.75, 287017.5]]
-          ]),
-          interestPerAnnum: [19500, 21021],
-          totalInterest: 40521
-        })
-      );
+          debtRepayment: {
+            interestRate: 6,
+            type: "repayment"
+          }
+        };
+
+        const result = compoundInterestPerPeriod(options);
+
+        expect(result).toMatchObject(
+          expect.objectContaining({
+            investmentType: "debtRepayment",
+            endBalance: 240000,
+            totalDebtPaid: 278011.65373198205,
+            totalEquity: 240000,
+            totalInterest: 0,
+            totalInvestment: 518011.65373198205,
+            currentBalance: 240000,
+            remainingDebt: 0,
+            monthlyRepaymentAmount: 1438.9212603666167,
+            netInvestment: -278011.65373198205
+          })
+        );
+      });
     });
   });
 
   describe("contribution", () => {
     it("should calculate an invested principal with monthly contributions over a single year", () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 1,
@@ -173,13 +290,13 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           paymentsPerAnnum: 12,
           totalPayments: 12,
           principal: 250_000,
           rate: 0.078,
           totalInvestment: 262_000,
-          currentBalance: 269_500,
+          currentBalance: 250_000,
           totalInterest: 19_500,
           endBalance: 269_500,
           investmentType: "contribution",
@@ -191,7 +308,7 @@ describe("compoundInterestPerPeriod", () => {
       );
     });
     it("should calculate an invested principal with monthly contributions over multiple years", () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -204,7 +321,7 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: false,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           paymentsPerAnnum: 12,
           totalPayments: 24,
           principal: 250_000,
@@ -212,7 +329,7 @@ describe("compoundInterestPerPeriod", () => {
           multiplierTotal: 1.1620840000000001,
           rate: 0.078,
           totalInvestment: 274_000,
-          currentBalance: 290_521,
+          currentBalance: 250_000,
           endBalance: 290_521.00000000006,
           totalInterest: 40_521,
           investmentType: "contribution",
@@ -232,17 +349,9 @@ describe("compoundInterestPerPeriod", () => {
     });
   });
 
-  it("when default options are supplied", () => {
-    // const result = compoundInterestPerPeriod({
-    //   principal: 250_000,
-    //   rate: 7.8,
-    //   years: 29
-    // });
-  });
-
   describe("accrualOfPaymentsPerAnnum", () => {
     it('when "accrualOfPaymentsPerAnnum" is true', () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -254,21 +363,19 @@ describe("compoundInterestPerPeriod", () => {
       expect(result).toMatchObject(
         expect.objectContaining({
           accrualOfPaymentsPerAnnum: true,
-          currentPositionInYears: undefined,
+          currentPositionInYears: 0,
           paymentsPerAnnum: 12,
           years: 2,
-          // totalPayments: 1,
-          totalPayments: 24, // FIXME returning a single payment
+          totalPayments: 24,
           principal: 250_000,
           multiplierPerPeriod: 1.0065,
           multiplierTotal: 1.1620840000000001,
           rate: 0.078,
           totalInvestment: 274_000,
-          currentBalance: 318_109.82,
+          currentBalance: 250_000,
           endBalance: 318_109.82,
           totalInterest: 44_109.82369477549,
-          // investmentType: "lumpSum",
-          investmentType: "contribution", // FIXME should be contribution
+          investmentType: "contribution",
           ratePerPeriod: 0.0065,
           interestMatrix: new Map([
             [
@@ -294,7 +401,7 @@ describe("compoundInterestPerPeriod", () => {
 
   describe("paymentsPerAnnum", () => {
     it("when paymentsPerAnnum is 1 it returns a breakdown of the balance for each year", () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -315,7 +422,7 @@ describe("compoundInterestPerPeriod", () => {
     });
 
     it("when there are more than one paymentsPerAnnum it returns a monthly breakdown of balance", () => {
-      const options: InterestOptions = {
+      const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
         years: 1,
@@ -335,15 +442,46 @@ describe("compoundInterestPerPeriod", () => {
     });
   });
 
-  it("when currentPositionInYears is supplied", () => {
-    const options: InterestOptions = {
-      principal: 250_000,
-      rate: 7.8,
-      years: 29,
-      paymentsPerAnnum: 12,
-      amountPerAnnum: 12_000,
-      currentPositionInYears: 5
-    };
-    const result = compoundInterestPerPeriod(options);
+  describe("currentPositionInYears", () => {
+    it("when currentPositionInYears is supplied it returns the correct currentBalance for the end of the first of the investment", () => {
+      const options: IOptions = {
+        principal: 250_000,
+        rate: 7.8,
+        years: 25,
+        paymentsPerAnnum: 12,
+        amountPerAnnum: 12_000,
+        currentPositionInYears: 1
+      };
+      const result = compoundInterestPerPeriod(options);
+      expect(result).toMatchObject(
+        expect.objectContaining({
+          currentBalance: 269500,
+          totalInterest: 1384590.74754,
+          endBalance: 1634590.7235901707,
+          accrualOfPaymentsPerAnnum: false,
+          investmentType: "contribution"
+        })
+      );
+    });
+    it("when currentPositionInYears is supplied it returns the correct currentBalance for end of the 5th year of investment", () => {
+      const options: IOptions = {
+        principal: 250_000,
+        rate: 7.8,
+        years: 25,
+        paymentsPerAnnum: 12,
+        amountPerAnnum: 12_000,
+        currentPositionInYears: 5
+      };
+      const result = compoundInterestPerPeriod(options);
+      expect(result).toMatchObject(
+        expect.objectContaining({
+          currentBalance: 363943.38,
+          totalInterest: 1384590.74754,
+          endBalance: 1634590.7235901707,
+          accrualOfPaymentsPerAnnum: false,
+          investmentType: "contribution"
+        })
+      );
+    });
   });
 });

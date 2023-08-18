@@ -1,4 +1,15 @@
-import { calcInvestmentWithInterest } from "compound-interest";
+import { compoundInterestPerPeriod } from "compound-interest";
 
-const investmentPie = calcInvestmentWithInterest(500, 8, 30, 12, 6_000);
-console.log(investmentPie);
+// example interest only payment
+const valueOfHome = compoundInterestPerPeriod({
+  principal: 150_000,
+  rate: 4,
+  years: 5,
+  paymentsPerAnnum: 12,
+  amountPerAnnum: 12_000,
+  debtRepayment: {
+    interestRate: 6,
+    type: "interestOnly"
+  }
+});
+console.log("valueOfHome", valueOfHome);
