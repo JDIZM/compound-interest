@@ -443,7 +443,7 @@ describe("compoundInterestPerPeriod", () => {
   });
 
   describe("currentPositionInYears", () => {
-    it("when currentPositionInYears is supplied it returns the correct currentBalance for the end of the first of the investment", () => {
+    it("when currentPositionInYears is supplied it returns the correct currentBalance for the end of the first of year of the investment", () => {
       const options: IOptions = {
         principal: 250_000,
         rate: 7.8,
