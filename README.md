@@ -1,14 +1,6 @@
 # compound interest
 
-There are some libraries to take inspiration from
-
-https://www.npmjs.com/package/react-compound-interest
-
-https://www.npmjs.com/package/compound-interest-calc
-
-- https://github.com/BrooksPoltl/compound-interest/blob/master/index.js
-
-https://cameronnokes.com/blog/the-30-second-guide-to-publishing-a-typescript-package-to-npm/
+A finance calculator to calculate compound interest over a period of time with different investment types.
 
 ### Features
 
@@ -25,6 +17,8 @@ For example, if you invest $1,000 today at a 7% annual interest rate, how much w
 
 #### Mortgage
 
+<!-- TODO this is essentially done the only difference is we dont have a deposit option -->
+
 - [ ] 1. calculate mortgage repayments
 
 #### Casfhlow
@@ -36,7 +30,7 @@ For example, if you invest $1,000 today at a 7% annual interest rate, how much w
 - `principal: number` The initial amount invested or borrowed
 - `rate: number` The interest rate (or growth rate) per annum
 - `years: number` The number of years invested
-- `paymentsPerAnnum: number` The number of contribution payments per annum (eg 12 for monthly) -- also used to show the interest balance per period?? so if you want the interest to show monthly for each year.
+- `paymentsPerAnnum: number` The number of contribution payments per annum (eg 12 for monthly) will be used to show the interest balance per period. So if you want the interest to show monthly for each year then make sure you define the paymentsPerAnnum as 12.
 - `currentPositionInYears: number` The current position in years (eg 2 for the second year of the investment)
 
 #### Contribution Options
@@ -61,8 +55,6 @@ What are investment types? These are used to calculate the final results:
 2. debtRepayment - a borrowed investment calculated over a period of time with a decreasing principal or interest only payments
 3. contribution - a single investment calculated over a period of time with additional contributions
 4. mortgage `not yet implemented`
-
-debtRepayment option is confusing to say the least; all this appears to do is not calculate the principal in the total investment cost.
 
 ### Examples
 
