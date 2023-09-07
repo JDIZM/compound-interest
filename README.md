@@ -79,8 +79,9 @@ const additionalContributions = compoundInterestPerPeriod({
 });
 console.log("additionalContributions", additionalContributions);
 
-// example interest only payment with an interest rate of 6% on a principal of 250,000
-const valueOfHome = compoundInterestPerPeriod({
+// example interest only payment that compounds at 4% per annum
+// with an interest rate of 6% on a principal of 250,000
+const interestOnly = compoundInterestPerPeriod({
   principal: 250_000,
   rate: 4,
   years: 25,
@@ -91,4 +92,18 @@ const valueOfHome = compoundInterestPerPeriod({
   }
 });
 console.log("valueOfHome", valueOfHome);
+
+// example debtRepayment that compounds at 4% per annum
+// with an interest rate of 6% on a principal of 150,000
+const debtRepayment = compoundInterestPerPeriod({
+  principal: 150_000,
+  rate: 4,
+  years: 25,
+  paymentsPerAnnum: 12,
+  debtRepayment: {
+    interestRate: 6,
+    type: "repayment"
+  }
+});
+console.log("debtRepayment", debtRepayment);
 ```
