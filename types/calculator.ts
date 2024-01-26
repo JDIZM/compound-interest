@@ -1,11 +1,28 @@
 export type InvestmentType = "lumpSum" | "contribution" | "debtRepayment" | "mortgage";
+export type MortgageType = "interestOnly" | "repayment";
+export type MortgageOptions = {
+  homeValue: number;
+  deposit: number;
+  interestRate: number;
+  years: number;
+};
 
-export type Mortgage = {
+export interface MortgageResult {
+  homeValue: number;
   deposit: number;
   monthlyRepayment: number;
   interestRate: number;
   years: number;
-  debtRepayment?: boolean;
+  principal: number;
+  threePercentHigherMonthlyRepayment: number;
+}
+
+export type InterestOnlyMortgageResult = Omit<MortgageResult, "monthlyRepayment"> & {
+  interestPayments: {
+    yearly: number;
+    monthly: number;
+    period: number;
+  };
 };
 
 // TODO additional debt repayment types
