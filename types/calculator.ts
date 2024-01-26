@@ -14,7 +14,6 @@ export interface MortgageResult {
   interestRate: number;
   years: number;
   principal: number;
-  threePercentHigherMonthlyRepayment: number;
 }
 
 export type InterestOnlyMortgageResult = Omit<MortgageResult, "monthlyRepayment"> & {
