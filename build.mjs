@@ -13,7 +13,6 @@ const sharedConfig = {
   bundle: true,
   minify: true,
   sourcemap: true,
-  target: "es2022"
 };
 
 build({
@@ -21,6 +20,7 @@ build({
   platform: "node",
   outfile: "./dist/index.js",
   format: "cjs",
+  target: "node16"
 });
 
 build({
@@ -28,4 +28,5 @@ build({
   outfile: "./dist/index.esm.js",
   platform: "neutral",
   format: "esm",
+  target: "es2022"
 });
