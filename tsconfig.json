@@ -3,9 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "NodeNext",
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     // "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
@@ -25,23 +23,14 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
+    "typeRoots": ["./node_modules/@types"],
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "test-package",
-    "test.ts"
-  ]
+  "exclude": ["node_modules", "dist", "test-package", "test.ts"]
 }

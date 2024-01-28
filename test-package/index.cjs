@@ -1,4 +1,4 @@
-const { compoundInterestPerPeriod } = require("compound-interest")
+const { compoundInterestPerPeriod } = require("compound-interest");
 
 // example interest only payment
 const valueOfHome = compoundInterestPerPeriod({

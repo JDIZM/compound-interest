@@ -12,7 +12,7 @@ const sharedConfig = {
   entryPoints: ["./index.ts"],
   bundle: true,
   minify: true,
-  sourcemap: true,
+  sourcemap: true
 };
 
 build({
