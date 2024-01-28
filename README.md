@@ -2,6 +2,26 @@
 
 A finance calculator to calculate compound interest over a period of time with different investment types.
 
+### Usage
+
+Typescript configuration for CJS and ESM and using the imported types.
+
+In your `tsconfig.json` you want the following settings to work with CJS and ESM.
+
+#### Working with CJS
+
+```json
+"target": "es2016",
+"module": "commonjs",
+```
+
+#### Working with ESM
+
+```json
+"target": "ESNext",
+"module": "ESNext",
+"moduleResolution": "bundler",
+```
 ### Features
 
 This calculator can be used to calculate the future value of a present lump sum with contributions, debt repayment or mortgage. The calculator compounds interest per period and can be used to calculate the value of investments or debt over a period of time.
