@@ -1,7 +1,8 @@
 import { compoundInterestPerPeriod } from "compound-interest";
+import type { CompoundInterestResult } from "compound-interest/types/calculator";
 
 // example interest only payment
-const valueOfHome = compoundInterestPerPeriod({
+const valueOfHome: CompoundInterestResult = compoundInterestPerPeriod({
   principal: 150_000,
   rate: 4,
   years: 5,

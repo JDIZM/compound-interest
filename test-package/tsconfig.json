@@ -1,34 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "commonjs",
-    "lib": ["es2021"],
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "noEmit": false,
-    "removeComments": true,
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": false,
-    "inlineSources": true,
-    "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
-    "typeRoots": ["./node_modules/@types"],
-    "resolveJsonModule": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,                   
+    "skipLibCheck": true                  
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
