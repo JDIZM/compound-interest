@@ -1,7 +1,7 @@
 {
-  "name": "compound-interest",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@jdizm/finance-calculator",
+  "version": "0.1.0",
+  "description": "A finance calculator to calculate compound interest over a period of time with different investment types.",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
@@ -16,9 +16,8 @@
     "test": "vitest --run --coverage"
   },
   "keywords": [],
-  "author": "",
+  "author": "JDIZM",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.2.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
@@ -40,5 +39,13 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JDIZM/compound-interest.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JDIZM/compound-interest/issues"
+  },
+  "homepage": "https://github.com/JDIZM/compound-interest#readme"
 }
