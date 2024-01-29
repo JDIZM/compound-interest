@@ -17,9 +17,6 @@ export const calcInvestmentType = (options: IOptions): InvestmentType => {
   if ("amountPerAnnum" in options && options.amountPerAnnum && options.amountPerAnnum > 0) {
     return "contribution";
   }
-  if ("mortgage" in options && options.mortgage) {
-    return "mortgage";
-  }
   return "lumpSum";
 };
 
