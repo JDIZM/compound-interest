@@ -1,0 +1,41 @@
+name: node tests
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14, 16, 18, 20]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: volta-cli/action@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run tsc:check
+      - run: npm run build:esm
+      - run: npm run test
+  publish:
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    steps:
+      - uses: actions/checkout@v3
+      # - uses: volta-cli/action@v3
+      #   with:
+      #     node-version: 20
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+      - run: npm run build:esm
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
