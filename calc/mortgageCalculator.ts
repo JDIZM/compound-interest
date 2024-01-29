@@ -19,6 +19,7 @@ const calcMortgageRepayment = (mortgage: MortgageOptions, principal: number): Mo
 
 const calcInterestOnly = (mortgage: MortgageOptions, principal: number): InterestOnlyMortgageResult => {
   const { homeValue, deposit, interestRate: rate, years } = mortgage;
+
   // calculate the interest only payments
   const interestPayments = calcInterestPayments(principal, rate, 12);
 
@@ -32,7 +33,10 @@ const calcInterestOnly = (mortgage: MortgageOptions, principal: number): Interes
   };
 };
 
-export function mortgageCalculator(mortgage: MortgageOptions, type: MortgageType) {
+export function mortgageCalculator(
+  mortgage: MortgageOptions,
+  type: MortgageType
+): MortgageResult | InterestOnlyMortgageResult {
   // The amount borrowed
   const principal = mortgage.homeValue - mortgage.deposit;
 
