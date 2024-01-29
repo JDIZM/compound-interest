@@ -1,4 +1,4 @@
-export type InvestmentType = "lumpSum" | "contribution" | "debtRepayment" | "mortgage";
+export type InvestmentType = "lumpSum" | "contribution" | "debtRepayment";
 export type MortgageType = "interestOnly" | "repayment";
 export type MortgageOptions = {
   homeValue: number;

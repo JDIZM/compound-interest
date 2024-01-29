@@ -27,8 +27,6 @@ export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type:
   switch (type) {
     case "lumpSum":
       return 1;
-    case "mortgage":
-      throw new Error("Not implemented");
     case "contribution":
     case "debtRepayment":
     default:
