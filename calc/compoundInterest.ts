@@ -34,9 +34,11 @@ export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type:
   }
 };
 
-// The PMT function calculates the periodic payment
-// for an annuity investment based on constant-amount periodic payments
-// and a constant interest rate.
+/**
+ * The PMT function calculates the periodic payment
+ * for an annuity investment based on constant-amount periodic payments
+ * and a constant interest rate.
+ */
 export const PMT = (mir: number, nper: number, pv: number, fv = 0, type: 0 | 1) => {
   // mir - monthly interest rate in decimal form
   // nper - number of periods (months)
@@ -126,9 +128,13 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
 
   for (let i = 0; i < years; i++) {
     const monthlyBalance: number[] = [];
+
     if (i > 0) {
-      prevBalance = interestMatrix.get(`${i}`)![paymentsPerAnnum - 1];
+      const currentMonthsInterest = interestMatrix.get(`${i}`);
+      if (!currentMonthsInterest) throw new Error("Invalid interestMatrix");
+      prevBalance = currentMonthsInterest[paymentsPerAnnum - 1];
     }
+
     const interestThisYear = prevBalance * rate;
     const interestParts: number[] = [];
 
@@ -144,6 +150,7 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
         const interest = interestThisYear / paymentsPerAnnum;
         prevBalance = prevBalance + interest;
       }
+
       monthlyBalance.push(Number(prevBalance.toFixed(2)));
     }
 
@@ -163,9 +170,17 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
 
   const totalInterest = interestPerAnnum.reduce((a, b) => a + b, 0);
 
-  const endBalance = accrualOfPaymentsPerAnnum
-    ? interestMatrix.get(`${years}`)![paymentsPerAnnum - 1]
-    : principal * multiplierTotal;
+  function getEndBalance() {
+    if (accrualOfPaymentsPerAnnum) {
+      const balance = interestMatrix.get(`${years}`);
+      if (!balance) throw new Error("Invalid endBalance");
+      return balance[paymentsPerAnnum - 1];
+    } else {
+      return principal * multiplierTotal;
+    }
+  }
+
+  const endBalance = getEndBalance();
 
   const result: CompoundInterestResult = {
     principal,
