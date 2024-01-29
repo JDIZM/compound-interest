@@ -2,6 +2,14 @@
 
 A finance calculator to calculate compound interest over a period of time with different investment types.
 
+### Installation
+
+This supports node 16 and above.
+
+```bash
+npm install @jdizm/finance-calculator
+```
+
 ### Features
 
 This calculator can be used to calculate the future value of a present lump sum with contributions, debt repayment or mortgage. The calculator compounds interest per period and can be used to calculate the value of investments or debt over a period of time.
