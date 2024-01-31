@@ -1,6 +1,6 @@
 {
   "name": "@jdizm/finance-calculator",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A finance calculator to calculate compound interest over a period of time with different investment types.",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
@@ -37,7 +37,9 @@
     "node": "16.20.1",
     "npm": "9.2.0"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JDIZM/compound-interest.git"
