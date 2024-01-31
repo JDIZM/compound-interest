@@ -1,10 +1,15 @@
 # compound interest
 
-A finance calculator to calculate compound interest over a period of time with different investment types.
+A finance calculator to:
+
+- calculate `compound interest` over a period of time with different investment types.
+- calculate `mortgage` repayments and interest only payments.
 
 ### Installation
 
-This supports node 16 and above.
+This library will work both client and server side, it is bundled using [pkgroll](https://github.com/privatenumber/pkgroll) and is written in TypeScript.
+
+This has only been tested with `node 16` and above however it exports both `CJS` and `ESM`.
 
 ```bash
 npm install @jdizm/finance-calculator
@@ -30,9 +35,9 @@ For example, if you invest $1,000 today at a 7% annual interest rate, how much w
 
 ### Usage
 
-Typescript configuration for CJS and ESM and using the type declarations.
+This library is written in TypeScript and exports both `CJS` and `ESM` modules.
 
-In your `tsconfig.json` you want the following settings to work with CJS and ESM.
+If you are using this with NodeJS then in your `tsconfig.json` you want the following settings to work with CJS or ESM.
 
 #### Working with CJS
 
@@ -65,6 +70,7 @@ const result = mortgageCalculator(
 ```
 
 #### Compound Interest Calculator
+
 ```ts
 // calculate a lump sum over 2 years
 const lumpSum = compoundInterestPerPeriod({
@@ -110,7 +116,8 @@ const debtRepayment = compoundInterestPerPeriod({
   }
 });
 ```
-#### Options
+
+##### Options
 
 - `principal: number` The initial amount invested or borrowed
 - `rate: number` The interest rate (or growth rate) per annum
@@ -118,12 +125,12 @@ const debtRepayment = compoundInterestPerPeriod({
 - `paymentsPerAnnum: number` The number of contribution payments per annum (eg 12 for monthly) will be used to show the interest balance per period. So if you want the interest to show monthly for each year then make sure you define the paymentsPerAnnum as 12.
 - `currentPositionInYears: number` The current position in years (eg 2 for the second year of the investment)
 
-##### Contribution Options
+###### Contribution Options
 
 - `amountPerAnnum: number` The amount of contributions per annum (eg 6_000 for 500 per month)
 - `accrualOfPaymentsPerAnnum: number` If provided payments accrue interest per annum; Otherwise interest is only accrued on the principal payment.
 
-##### Debt Repayment Options
+###### Debt Repayment Options
 
 - `debtRepayment: object` if provided this denotes that the principal is borrowed.
 
@@ -132,7 +139,7 @@ It will calculate the monthly interest payments for a given interest rate and pr
 - `interestRate: number` - the interest rate of borrowing
 - `type: "interestOnly"` // this is the default
 
-#### Investment Types
+##### Investment Types
 
 What are investment types? These are used to calculate the final results:
 
