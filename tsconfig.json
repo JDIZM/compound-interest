@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "bundler",
     "lib": ["ESNext"],
     // "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,

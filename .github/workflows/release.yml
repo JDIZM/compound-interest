@@ -15,7 +15,7 @@ jobs:
       - uses: volta-cli/action@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
+      - run: npm install
       - run: npm run lint
       - run: npm run format:check
       - run: npm run tsc:check
@@ -26,15 +26,12 @@ jobs:
     needs: test-and-build
     steps:
       - uses: actions/checkout@v3
-      # - uses: volta-cli/action@v3
-      #   with:
-      #     node-version: 20
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v3
         with:
           node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
-      - run: npm ci
+      - run: npm install
       - run: npm run build:esm
       - run: npm publish --access public
         env:
