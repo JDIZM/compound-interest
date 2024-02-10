@@ -1,6 +1,6 @@
 {
   "name": "@jdizm/finance-calculator",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "A finance calculator to calculate compound interest over a period of time with different investment types.",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",
