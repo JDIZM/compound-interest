@@ -10,16 +10,6 @@ export const compoundInterestOverYears = (principal: number, rate: number, years
   return principal * multiplier;
 };
 
-export const calcInvestmentType = (options: IOptions): InvestmentType => {
-  if ("debtRepayment" in options && options.debtRepayment) {
-    return "debtRepayment";
-  }
-  if ("amountPerAnnum" in options && options.amountPerAnnum && options.amountPerAnnum > 0) {
-    return "contribution";
-  }
-  return "lumpSum";
-};
-
 export const calcTotalPayments = (years: number, paymentsPerAnnum: number, type: InvestmentType) => {
   switch (type) {
     case "lumpSum":
@@ -82,9 +72,47 @@ export const calcInterestPayments = (principal: number, interestRate: number, pa
   };
 };
 
+/**
+ * @example
+ * // calculate a lump sum over 2 years
+ * const lumpSum = compoundInterestPerPeriod({
+ *  type: "lumpSum",
+ *  principal: 500,
+ *  rate: 3.4,
+ *  years: 2,
+ *  paymentsPerAnnum: 12 // displays monthly interest balance
+ * });
+ *
+ * @example
+ * // calculate a lump sum over 2 years with additional contributions of 500 per month
+ * const additionalContributions = compoundInterestPerPeriod({
+ *   type: "contribution",
+ *   principal: 500,
+ *   rate: 3.4,
+ *   years: 2,
+ *   paymentsPerAnnum: 12,
+ *   amountPerAnnum: 6_000,
+ *   accrualOfPaymentsPerAnnum: true
+ *  });
+ *
+ * @example
+ * // example interest only payment that compounds at 4% per annum
+ * // with an interest rate of 6% on a principal of 250,000
+ * const interestOnly = compoundInterestPerPeriod({
+ *  type: "debtRepayment",
+ *  principal: 250_000,
+ *  rate: 4,
+ *  years: 25,
+ *  paymentsPerAnnum: 12,
+ *  debtRepayment: {
+ *      interestRate: 6,
+ *      type: "interestOnly"
+ *    }
+ *  });
+ */
 export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestResult => {
   let { rate } = options;
-  const { principal, years, paymentsPerAnnum = 1, currentPositionInYears } = options;
+  const { type: investmentType, principal, years, paymentsPerAnnum = 1, currentPositionInYears } = options;
 
   let amountPerAnnum = 0;
   let accrualOfPaymentsPerAnnum = false;
@@ -171,6 +199,7 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     if (accrualOfPaymentsPerAnnum) {
       const balance = interestMatrix.get(`${years}`);
       if (!balance) throw new Error("Invalid endBalance");
+      if (!balance) throw new Error("Invalid endBalance");
       return balance[paymentsPerAnnum - 1];
     } else {
       return principal * multiplierTotal;

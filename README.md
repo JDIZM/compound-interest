@@ -74,6 +74,7 @@ const result = mortgageCalculator(
 ```ts
 // calculate a lump sum over 2 years
 const lumpSum = compoundInterestPerPeriod({
+  type: "lumpSum",
   principal: 500,
   rate: 3.4,
   years: 2,
@@ -82,6 +83,7 @@ const lumpSum = compoundInterestPerPeriod({
 
 // calculate a lump sum over 2 years with additional contributions of 500 per month
 const additionalContributions = compoundInterestPerPeriod({
+  type: "contribution",
   principal: 500,
   rate: 3.4,
   years: 2,
@@ -93,6 +95,7 @@ const additionalContributions = compoundInterestPerPeriod({
 // example interest only payment that compounds at 4% per annum
 // with an interest rate of 6% on a principal of 250,000
 const interestOnly = compoundInterestPerPeriod({
+  type: "debtRepayment",
   principal: 250_000,
   rate: 4,
   years: 25,
@@ -105,7 +108,8 @@ const interestOnly = compoundInterestPerPeriod({
 
 // example debtRepayment that compounds at 4% per annum
 // with an interest rate of 6% on a principal of 150,000
-const debtRepayment = compoundInterestPerPeriod({
+const repayment = compoundInterestPerPeriod({
+  type: "debtRepayment",
   principal: 150_000,
   rate: 4,
   years: 25,
@@ -119,6 +123,7 @@ const debtRepayment = compoundInterestPerPeriod({
 
 ##### Options
 
+- `type: 'lumpSum' | 'contribution' | 'debtRepayment` - the type of investment to calculate
 - `principal: number` The initial amount invested or borrowed
 - `rate: number` The interest rate (or growth rate) per annum
 - `years: number` The number of years invested
