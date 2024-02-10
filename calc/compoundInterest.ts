@@ -136,7 +136,6 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     }
   }
 
-  const investmentType = calcInvestmentType(options);
   const totalPayments = calcTotalPayments(years, paymentsPerAnnum, investmentType);
 
   const ratePerPeriod = rate / paymentsPerAnnum;
@@ -198,7 +197,6 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
   function getEndBalance() {
     if (accrualOfPaymentsPerAnnum) {
       const balance = interestMatrix.get(`${years}`);
-      if (!balance) throw new Error("Invalid endBalance");
       if (!balance) throw new Error("Invalid endBalance");
       return balance[paymentsPerAnnum - 1];
     } else {
@@ -235,7 +233,8 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
         ...result,
         totalEquity: endBalance - principal,
         remainingDebt: principal,
-        interestPayments: calcInterestPayments(principal, options.debtRepayment.interestRate, paymentsPerAnnum)
+        interestPayments: calcInterestPayments(principal, options.debtRepayment.interestRate, paymentsPerAnnum),
+        netInvestment: endBalance - totalInvestment - principal
       };
       return resultWithDebt;
     }

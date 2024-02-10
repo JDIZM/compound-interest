@@ -193,6 +193,30 @@ describe("compoundInterestPerPeriod", () => {
           })
         );
       });
+
+      it("should calculate the correct totalInvestment, netInvestment and remainingDebt", () => {
+        const result = compoundInterestPerPeriod({
+          type: "debtRepayment",
+          principal: 150_000,
+          rate: 4,
+          years: 5,
+          paymentsPerAnnum: 12,
+          debtRepayment: {
+            interestRate: 6,
+            type: "interestOnly"
+          }
+        });
+
+        expect(result).toMatchObject(
+          expect.objectContaining({
+            endBalance: 182_497.93536000003,
+            remainingDebt: 150_000,
+            totalInvestment: 45_000,
+            totalEquity: 32_497.935360000032,
+            netInvestment: -12_502.064639999968
+          })
+        );
+      });
     });
 
     describe("repayment", () => {
