@@ -43,6 +43,7 @@ describe("compoundInterestPerPeriod", () => {
   describe("lumpSum", () => {
     it("should calculate a lump sum over a single year with no contributions", () => {
       const options: IOptions = {
+        type: "lumpSum",
         principal: 500,
         rate: 3.4,
         years: 1,
@@ -76,6 +77,7 @@ describe("compoundInterestPerPeriod", () => {
 
     it("should calculate a lump sum over multiple years with no contributions", () => {
       const options: IOptions = {
+        type: "lumpSum",
         principal: 500,
         rate: 3.4,
         years: 2,
@@ -110,6 +112,7 @@ describe("compoundInterestPerPeriod", () => {
 
   describe("debtRepayment", () => {
     const options: IOptions = {
+      type: "debtRepayment",
       principal: 250_000,
       rate: 7.8,
       years: 1,
@@ -190,10 +193,35 @@ describe("compoundInterestPerPeriod", () => {
           })
         );
       });
+
+      it("should calculate the correct totalInvestment, netInvestment and remainingDebt", () => {
+        const result = compoundInterestPerPeriod({
+          type: "debtRepayment",
+          principal: 150_000,
+          rate: 4,
+          years: 5,
+          paymentsPerAnnum: 12,
+          debtRepayment: {
+            interestRate: 6,
+            type: "interestOnly"
+          }
+        });
+
+        expect(result).toMatchObject(
+          expect.objectContaining({
+            endBalance: 182_497.93536000003,
+            remainingDebt: 150_000,
+            totalInvestment: 45_000,
+            totalEquity: 32_497.935360000032,
+            netInvestment: -12_502.064639999968
+          })
+        );
+      });
     });
 
     describe("repayment", () => {
       const options: IOptions = {
+        type: "debtRepayment",
         principal: 240_000,
         rate: 4,
         years: 30,
@@ -245,6 +273,7 @@ describe("compoundInterestPerPeriod", () => {
       });
       it("should calculate a borrowed principal over multiple years with repayments towards the principal with no compound interest", () => {
         const options: IOptions = {
+          type: "debtRepayment",
           principal: 240_000,
           rate: 0,
           years: 30,
@@ -278,6 +307,7 @@ describe("compoundInterestPerPeriod", () => {
   describe("contribution", () => {
     it("should calculate an invested principal with monthly contributions over a single year", () => {
       const options: IOptions = {
+        type: "contribution",
         principal: 250_000,
         rate: 7.8,
         years: 1,
@@ -309,6 +339,7 @@ describe("compoundInterestPerPeriod", () => {
     });
     it("should calculate an invested principal with monthly contributions over multiple years", () => {
       const options: IOptions = {
+        type: "contribution",
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -352,6 +383,7 @@ describe("compoundInterestPerPeriod", () => {
   describe("accrualOfPaymentsPerAnnum", () => {
     it('when "accrualOfPaymentsPerAnnum" is true', () => {
       const options: IOptions = {
+        type: "contribution",
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -402,6 +434,7 @@ describe("compoundInterestPerPeriod", () => {
   describe("paymentsPerAnnum", () => {
     it("when paymentsPerAnnum is 1 it returns a breakdown of the balance for each year", () => {
       const options: IOptions = {
+        type: "contribution",
         principal: 250_000,
         rate: 7.8,
         years: 2,
@@ -423,6 +456,7 @@ describe("compoundInterestPerPeriod", () => {
 
     it("when there are more than one paymentsPerAnnum it returns a monthly breakdown of balance", () => {
       const options: IOptions = {
+        type: "contribution",
         principal: 250_000,
         rate: 7.8,
         years: 1,
@@ -445,6 +479,7 @@ describe("compoundInterestPerPeriod", () => {
   describe("currentPositionInYears", () => {
     it("when currentPositionInYears is supplied it returns the correct currentBalance for the end of the first of year of the investment", () => {
       const options: IOptions = {
+        type: "contribution",
         principal: 250_000,
         rate: 7.8,
         years: 25,
@@ -465,6 +500,7 @@ describe("compoundInterestPerPeriod", () => {
     });
     it("when currentPositionInYears is supplied it returns the correct currentBalance for end of the 5th year of investment", () => {
       const options: IOptions = {
+        type: "contribution",
         principal: 250_000,
         rate: 7.8,
         years: 25,

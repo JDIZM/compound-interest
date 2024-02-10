@@ -24,32 +24,37 @@ export type InterestOnlyMortgageResult = Omit<MortgageResult, "monthlyRepayment"
   };
 };
 
-// TODO additional debt repayment types
 export type DebtRepayment = {
   interestRate: number;
   type: "interestOnly" | "repayment";
 };
 
-export interface LumpSumOptions {
+export type IOptions = {
+  type: InvestmentType;
   principal: number;
   rate: number;
   years: number;
   paymentsPerAnnum?: number;
   currentPositionInYears?: number;
-}
+} & (LumpSumOptions | ContributionOptions | DebtRepaymentOptions);
 
-export interface ContributionOptions extends LumpSumOptions {
+export type LumpSumOptions = {
+  type: "lumpSum";
+};
+
+export type ContributionOptions = {
+  type: "contribution";
   paymentsPerAnnum?: number;
   amountPerAnnum?: number;
   accrualOfPaymentsPerAnnum?: boolean;
-}
+};
 
-export interface DebtRepaymentOptions extends LumpSumOptions {
+export type DebtRepaymentOptions = {
+  type: "debtRepayment";
+  paymentsPerAnnum?: number;
   currentPositionInYears?: number;
   debtRepayment: DebtRepayment;
-}
-
-export type IOptions = LumpSumOptions | ContributionOptions | DebtRepaymentOptions;
+};
 
 export interface InterestResult {
   principal: number;

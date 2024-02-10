@@ -1,18 +1,19 @@
 import { compoundInterestPerPeriod, mortgageCalculator } from "@jdizm/finance-calculator";
-import type { CompoundInterestResult } from "@jdizm/finance-calculator/types/calculator";
+import type { CompoundInterestResult, IOptions } from "@jdizm/finance-calculator/types/calculator";
 
 // example interest only payment
-const valueOfHome: CompoundInterestResult = compoundInterestPerPeriod({
+const options: IOptions  = {
+  type: "debtRepayment",
   principal: 150_000,
   rate: 4,
   years: 5,
   paymentsPerAnnum: 12,
-  amountPerAnnum: 12_000,
   debtRepayment: {
     interestRate: 6,
     type: "interestOnly"
   }
-});
+}
+const valueOfHome: CompoundInterestResult = compoundInterestPerPeriod(options);
 
 console.log("valueOfHome", valueOfHome);
 
