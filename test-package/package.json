@@ -2,22 +2,27 @@
   "name": "test-package",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:js": "node index.js",
-    "dev:ts": "npx vite-node index.ts"
+    "dev:cjs": "node index.cjs",
+    "dev:mjs": "node index.mjs",
+    "dev:ts": "npx tsx index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^20.2.1",
     "@jdizm/finance-calculator": "file:../dist",
-    "vite-node": "^0.31.1"
+    "@types/node": "^20.2.1"
   },
   "devDependencies": {
-    "typescript": "^5.0.4"
+    "tsx": "^4.7.1",
+    "typescript": "^5.0.4",
+    "vite-node": "^1.2.2"
+  },
+  "volta": {
+    "node": "20.11.0"
   }
 }
