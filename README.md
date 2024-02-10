@@ -7,7 +7,7 @@ A finance calculator to:
 
 ### Installation
 
-This library will work both client and server side, it is bundled using [pkgroll](https://github.com/privatenumber/pkgroll) and is written in TypeScript.
+This library will work both client and server side, it is bundled using [esbuild](https://esbuild.github.io/) and is written in TypeScript.
 
 This has only been tested with `node 14` and above however it exports both `CJS` and `ESM`.
 
