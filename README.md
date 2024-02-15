@@ -9,7 +9,7 @@ A finance calculator to:
 
 This library will work both client and server side, it is bundled using [esbuild](https://esbuild.github.io/) and is written in TypeScript.
 
-This has only been tested with `node 14` and above however it exports both `CJS` and `ESM`.
+If this package is being used on the server then it requires `node 18` and above however it exports both `CJS` and `ESM`.
 
 ```bash
 npm install @jdizm/finance-calculator
