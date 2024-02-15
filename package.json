@@ -22,7 +22,7 @@
     "@types/node": "^20.2.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
-    "@vitest/coverage-c8": "^0.33.0",
+    "@vitest/coverage-v8": "^1.2.2",
     "eslint": "^8.37.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-import-resolver-alias": "^1.1.2",
@@ -31,7 +31,7 @@
     "prettier": "^3.0.0",
     "typescript": "^5.0.4",
     "vite-node": "^0.31.1",
-    "vitest": "^0.31.1"
+    "vitest": "^1.2.2"
   },
   "volta": {
     "node": "20.11.0"
