@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PMT, calcInterestPayments, compoundInterestOverYears, compoundInterestPerPeriod } from "./compoundInterest";
-import { IOptions } from "../types/calculator";
+import type { IOptions } from "../types/calculator";
 
 describe("compoundInterestOverYears", () => {
   it("should calc interest with a decimal rate over 1 year", () => {

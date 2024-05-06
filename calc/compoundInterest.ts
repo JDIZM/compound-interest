@@ -1,4 +1,4 @@
-import { IOptions, CompoundInterestResult, InvestmentType, DebtRepaymentResult } from "../types/calculator";
+import type { IOptions, CompoundInterestResult, InvestmentType, DebtRepaymentResult } from "../types/calculator";
 
 export const compoundInterestOverYears = (principal: number, rate: number, years: number): number => {
   if (rate >= 1) {
@@ -147,8 +147,8 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
   const interestPerAnnum: number[] = [];
   const interestMatrix = new Map<string, number[]>();
 
-  let prevBalance = principal;
-  let currentBalance = principal;
+  let prevBalance: number = principal;
+  let currentBalance: number = principal;
 
   for (let i = 0; i < years; i++) {
     const monthlyBalance: number[] = [];
@@ -156,7 +156,11 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     if (i > 0) {
       const currentMonthsInterest = interestMatrix.get(`${i}`);
       if (!currentMonthsInterest) throw new Error("Invalid interestMatrix");
-      prevBalance = currentMonthsInterest[paymentsPerAnnum - 1];
+
+      const result = currentMonthsInterest[paymentsPerAnnum - 1];
+      if (!result) throw new Error("Invalid interestMatrix");
+
+      prevBalance = result;
     }
 
     const interestThisYear = prevBalance * rate;
@@ -189,7 +193,11 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
   if (currentPositionInYears) {
     const newBalance = interestMatrix.get(`${currentPositionInYears}`);
     if (!newBalance) throw new Error("Invalid currentPositionInYears");
-    currentBalance = newBalance[paymentsPerAnnum - 1];
+
+    const result = newBalance[paymentsPerAnnum - 1];
+    if (!result) throw new Error("Invalid currentPositionInYears");
+
+    currentBalance = result;
   }
 
   const totalInterest = interestPerAnnum.reduce((a, b) => a + b, 0);
@@ -198,7 +206,11 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
     if (accrualOfPaymentsPerAnnum) {
       const balance = interestMatrix.get(`${years}`);
       if (!balance) throw new Error("Invalid endBalance");
-      return balance[paymentsPerAnnum - 1];
+
+      const result = balance[paymentsPerAnnum - 1];
+      if (!result) throw new Error("Invalid endBalance");
+
+      return result;
     } else {
       return principal * multiplierTotal;
     }

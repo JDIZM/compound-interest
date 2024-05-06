@@ -1,4 +1,4 @@
-import { InterestOnlyMortgageResult, MortgageOptions, MortgageResult, MortgageType } from "../types/calculator";
+import type { MortgageType, MortgageResult, MortgageOptions, InterestOnlyMortgageResult } from "../types/calculator";
 import { calcInterestPayments, PMT } from "./compoundInterest";
 
 const calcMortgageRepayment = (mortgage: MortgageOptions, principal: number): MortgageResult => {
@@ -77,5 +77,7 @@ export const mortgageCalculator = (
     interestOnly: () => calcInterestOnly(mortgage, principal)
   };
 
-  return responses[type]();
+  const result = responses[type]();
+
+  return result;
 };

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { mortgageCalculator } from "./mortgageCalculator";
 
 describe("mortgageCalculator", () => {
-  it("should calculate an interest only mortgage with the correct payments and pricipal", () => {
+  it("should calculate an interest only mortgage with the correct payments and principal", () => {
     const result = mortgageCalculator(
       {
         homeValue: 150_000,
