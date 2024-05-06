@@ -39,10 +39,6 @@
   "files": [
     "dist"
   ],
-  "exports": {
-    "require": "./dist/index.js",
-    "import": "./dist/index.esm.js"
-  },
   "engines": {
     "node": "^18.0.0 || >= 20.0.0"
   },
