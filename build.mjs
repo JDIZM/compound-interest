@@ -7,7 +7,6 @@ new Generator({
   output: "./dist/index.d.ts"
 }).generate();
 
-// https://janessagarrow.com/blog/typescript-and-esbuild/
 const sharedConfig = {
   entryPoints: ["./index.ts"],
   bundle: true,
@@ -20,7 +19,7 @@ build({
   platform: "node",
   outfile: "./dist/index.js",
   format: "cjs",
-  target: "node16"
+  target: "node18"
 });
 
 build({
