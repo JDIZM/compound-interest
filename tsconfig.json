@@ -17,9 +17,9 @@
 
     // Library
     "declaration": true,
-    "allowImportingTsExtensions": true,
+    // "allowImportingTsExtensions": true, // disabled when emitting declaration files
     "allowSyntheticDefaultImports": true,
-    "noEmit": true,
+    "noEmit": false,
     "removeComments": true,
     "sourceMap": true,
     "inlineSources": true,
