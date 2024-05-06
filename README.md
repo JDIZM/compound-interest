@@ -5,16 +5,6 @@ A finance calculator to:
 - calculate `compound interest` over a period of time with different investment types.
 - calculate `mortgage` repayments and interest only payments.
 
-### Installation
-
-This library will work both client and server side, it is bundled using [esbuild](https://esbuild.github.io/) and is written in TypeScript.
-
-If this package is being used on the server then it requires `node 18` and above however it exports both `CJS` and `ESM`.
-
-```bash
-npm install @jdizm/finance-calculator
-```
-
 ### Features
 
 This calculator can be used to calculate the future value of a present lump sum with contributions, debt repayment or mortgage. The calculator compounds interest per period and can be used to calculate the value of investments or debt over a period of time.
@@ -33,25 +23,28 @@ For example, if you invest $1,000 today at a 7% annual interest rate, how much w
 - [x] 1. calculate mortgage - repayment
 - [x] 2. calculate mortgage - interest only
 
-### Usage
+### Installation
 
-This library is written in TypeScript and exports both `CJS` and `ESM` modules.
+This library will work both client and server side, it is bundled using [esbuild](https://esbuild.github.io/) and is written in TypeScript.
 
-If you are using this with NodeJS then in your `tsconfig.json` you want the following settings to work with CJS or ESM.
+If this package is being used on the server then it requires `node 18` and above however it exports for both `CJS` and `ESM`.
 
-#### Working with CJS
-
-```json
-"target": "es2016",
-"module": "commonjs",
+```bash
+npm install @jdizm/finance-calculator
 ```
 
-#### Working with ESM
+### Usage
 
-```json
-"target": "ESNext",
-"module": "ESNext",
-"moduleResolution": "bundler",
+Importing the library:
+
+```js
+// CommonJS
+const { compoundInterestPerPeriod, mortgageCalculator } = require("@jdizm/finance-calculator");
+```
+
+```js
+// ESM
+import { compoundInterestPerPeriod, mortgageCalculator } from "@jdizm/finance-calculator";
 ```
 
 #### Mortgage Calculator
@@ -151,3 +144,23 @@ What are investment types? These are used to calculate the final results:
 1. lumpSum - a single investment calculated over a period of time
 2. debtRepayment - a borrowed investment calculated over a period of time with a decreasing principal or interest only payments
 3. contribution - a single investment calculated over a period of time with additional contribution
+
+### Building with Typescript
+
+[Only certain tsconfig.json fields are respected when building with esbuild.](https://esbuild.github.io/content-types/#tsconfig-json)
+
+#### tsconfig.json
+
+```json
+"target": "es2022", // recommended over ESNext
+"module": "preserve", // added in ts 5.4 and implies "moduleResolution": "bundler"
+```
+
+#### References
+
+- https://www.totaltypescript.com/tsconfig-cheat-sheet
+- https://www.typescriptlang.org/tsconfig/#module
+- https://www.typescriptlang.org/tsconfig/#preserve
+- https://evertpot.com/universal-commonjs-esm-typescript-packages/
+- https://janessagarrow.com/blog/typescript-and-esbuild/
+- https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping
