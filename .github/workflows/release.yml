@@ -1,4 +1,4 @@
-name: node tests
+name: release
 
 on:
   release:
@@ -19,8 +19,8 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run tsc:check
-      - run: npm run build
       - run: npm run test
+      - run: npm run build
   publish:
     runs-on: ubuntu-latest
     needs: test-and-build
@@ -33,6 +33,24 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: npm install
       - run: npm run build
-      - run: npm publish --access public
+
+      - name: Update version based on tag
+        run: |
+          VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
+          echo "Updating package.json version to $VERSION"
+          npm version $VERSION --no-git-tag-version
+
+      - name: Commit version change
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "chore(release): update version to $VERSION"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
