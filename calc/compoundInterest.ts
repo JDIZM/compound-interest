@@ -41,7 +41,15 @@ export const calcTotalInvestment = (options: IOptions, investmentType: Investmen
   const { principal, years, paymentsPerAnnum = 1 } = options;
 
   if (investmentType === "contribution" && "amountPerAnnum" in options) {
-    const { amountPerAnnum = 0 } = options;
+    const { amountPerAnnum = 0, contributionPerAnnumChange = 0 } = options;
+    // Adjust annual contributions if contributionPerAnnumChange rate provided
+    if ( contributionPerAnnumChange > 0 ) {
+      let repaymentWithAnnualChange = amountPerAnnum;
+      for (let i = 1; i < years; i++) {
+        repaymentWithAnnualChange += repaymentWithAnnualChange * contributionPerAnnumChange / 100 + amountPerAnnum;
+      }
+      return principal * years + repaymentWithAnnualChange
+    }
     return principal + amountPerAnnum * years;
   }
 
@@ -94,6 +102,18 @@ export const calcInterestPayments = (principal: number, interestRate: number, pa
  *   amountPerAnnum: 6_000,
  *   accrualOfPaymentsPerAnnum: true
  *  });
+ * @example
+ * // calculate a lump sum over 2 years with additional contributions of 500 per month with 2% adjustment every year
+ * const additionalContributions = compoundInterestPerPeriod({
+ *   type: "contribution",
+ *   principal: 500,
+ *   rate: 3.4,
+ *   years: 2,
+ *   paymentsPerAnnum: 12,
+ *   amountPerAnnum: 6_000,
+ *   contributionPerAnnumChange: 2,
+ *   accrualOfPaymentsPerAnnum: true
+ *  });
  *
  * @example
  * // example interest only payment that compounds at 4% per annum
@@ -115,6 +135,7 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
   const { type: investmentType, principal, years, paymentsPerAnnum = 1, currentPositionInYears } = options;
 
   let amountPerAnnum = 0;
+  let contributionPerAnnumChange;
   let accrualOfPaymentsPerAnnum = false;
 
   if ("amountPerAnnum" in options && options.amountPerAnnum && options.amountPerAnnum > 0) {
@@ -123,6 +144,10 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
 
   if ("accrualOfPaymentsPerAnnum" in options && options.accrualOfPaymentsPerAnnum) {
     accrualOfPaymentsPerAnnum = options.accrualOfPaymentsPerAnnum;
+  }
+
+  if ("contributionPerAnnumChange" in options && options.contributionPerAnnumChange !== undefined) {
+    contributionPerAnnumChange = options.contributionPerAnnumChange;
   }
 
   // if rate is provided as a percentage, convert to decimal
@@ -170,6 +195,10 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
 
     for (let p = 0; p < paymentsPerAnnum; p++) {
       if (accrualOfPaymentsPerAnnum) {
+        // Adjust contributions only from the 2nd year
+        if (i >= 1 && contributionPerAnnumChange) {
+          amountPerAnnum = amountPerAnnum * contributionPerAnnumChange / 100 + amountPerAnnum;
+        }
         const newBalanceWithAccrual = prevBalance + amountPerAnnum / paymentsPerAnnum;
         const interest = newBalanceWithAccrual * ratePerPeriod;
         prevBalance = prevBalance + interest + amountPerAnnum / paymentsPerAnnum;

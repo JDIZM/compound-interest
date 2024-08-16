@@ -14,7 +14,7 @@ For example, if you invest $1,000 today at a 7% annual interest rate, how much w
 #### Compound Interest
 
 - [x] 1. calculate compound interest of a lump sum over time
-- [x] 2. calculate compound interest with additional contributions
+- [x] 2. calculate compound interest with additional contributions and annual contribution adjustments
 - [x] 3. calculate compound interest with interest only payments towards the principal borrowed
 - [x] 4. calculate compound interest with repayments towards the principal
 
@@ -74,7 +74,7 @@ const lumpSum = compoundInterestPerPeriod({
   paymentsPerAnnum: 12 // displays monthly interest balance
 });
 
-// calculate a lump sum over 2 years with additional contributions of 500 per month
+ // calculate a lump sum over 2 years with additional contributions of 500 per month with 2% adjustment every year
 const additionalContributions = compoundInterestPerPeriod({
   type: "contribution",
   principal: 500,
@@ -82,6 +82,7 @@ const additionalContributions = compoundInterestPerPeriod({
   years: 2,
   paymentsPerAnnum: 12,
   amountPerAnnum: 6_000,
+  contributionPerAnnumChange: 2,
   accrualOfPaymentsPerAnnum: true
 });
 
@@ -126,7 +127,8 @@ const repayment = compoundInterestPerPeriod({
 ###### Contribution Options
 
 - `amountPerAnnum: number` The amount of contributions per annum (eg 6_000 for 500 per month)
-- `accrualOfPaymentsPerAnnum: number` If provided payments accrue interest per annum; Otherwise interest is only accrued on the principal payment.
+- `accrualOfPaymentsPerAnnum: boolean` If provided payments accrue interest per annum; Otherwise interest is only accrued on the principal payment.
+- `contributionPerAnnumChange` Changes of annual contribution in percents (to adjust contribution according inflation rates, good for long investments)
 
 ###### Debt Repayment Options
 
