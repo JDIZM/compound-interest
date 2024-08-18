@@ -241,7 +241,8 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
 
       return result;
     } else {
-      return principal * multiplierTotal;
+      const contributionTotal = amountPerAnnum * years;
+      return principal * multiplierTotal + contributionTotal;
     }
   }
 
