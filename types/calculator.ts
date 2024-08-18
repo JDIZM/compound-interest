@@ -46,6 +46,7 @@ export type ContributionOptions = {
   type: "contribution";
   paymentsPerAnnum?: number;
   amountPerAnnum?: number;
+  contributionPerAnnumChange?: number;
   accrualOfPaymentsPerAnnum?: boolean;
 };
 

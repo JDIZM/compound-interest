@@ -592,4 +592,30 @@ describe("compoundInterestPerPeriod", () => {
       });
     });
   });
+
+  describe("contributionPerAnnumChange", () => {
+    it("when contributionPerAnnumChange is supplied it increases annual additional contribution amountPerAnnum", () => {
+      const options: IOptions = {
+        type: "contribution",
+        principal: 250_000,
+        rate: 7.8,
+        years: 25,
+        paymentsPerAnnum: 1,
+        amountPerAnnum: 12_000,
+        contributionPerAnnumChange: 3,
+        currentPositionInYears: 1,
+        accrualOfPaymentsPerAnnum: true
+      };
+      const result = compoundInterestPerPeriod(options);
+      expect(result).toMatchObject(
+        expect.objectContaining({
+          currentBalance: 282436,
+          totalInterest: 2144895.2679852117,
+          endBalance: 2832406.46,
+          accrualOfPaymentsPerAnnum: true,
+          investmentType: "contribution"
+        })
+      );
+    });
+  });
 });
