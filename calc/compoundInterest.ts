@@ -43,12 +43,12 @@ export const calcTotalInvestment = (options: IOptions, investmentType: Investmen
   if (investmentType === "contribution" && "amountPerAnnum" in options) {
     const { amountPerAnnum = 0, contributionPerAnnumChange = 0 } = options;
     // Adjust annual contributions if contributionPerAnnumChange rate provided
-    if ( contributionPerAnnumChange > 0 ) {
+    if (contributionPerAnnumChange > 0) {
       let repaymentWithAnnualChange = amountPerAnnum;
       for (let i = 1; i < years; i++) {
-        repaymentWithAnnualChange += repaymentWithAnnualChange * contributionPerAnnumChange / 100 + amountPerAnnum;
+        repaymentWithAnnualChange += (repaymentWithAnnualChange * contributionPerAnnumChange) / 100 + amountPerAnnum;
       }
-      return principal * years + repaymentWithAnnualChange
+      return principal * years + repaymentWithAnnualChange;
     }
     return principal + amountPerAnnum * years;
   }
@@ -197,7 +197,7 @@ export const compoundInterestPerPeriod = (options: IOptions): CompoundInterestRe
       if (accrualOfPaymentsPerAnnum) {
         // Adjust contributions only from the 2nd year
         if (i >= 1 && contributionPerAnnumChange) {
-          amountPerAnnum = amountPerAnnum * contributionPerAnnumChange / 100 + amountPerAnnum;
+          amountPerAnnum = amountPerAnnum * (1 + contributionPerAnnumChange / 100);
         }
         const newBalanceWithAccrual = prevBalance + amountPerAnnum / paymentsPerAnnum;
         const interest = newBalanceWithAccrual * ratePerPeriod;

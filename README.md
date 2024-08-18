@@ -128,7 +128,7 @@ const repayment = compoundInterestPerPeriod({
 
 - `amountPerAnnum: number` The amount of contributions per annum (eg 6_000 for 500 per month)
 - `accrualOfPaymentsPerAnnum: boolean` If provided payments accrue interest per annum; Otherwise interest is only accrued on the principal payment.
-- `contributionPerAnnumChange` Changes of annual contribution in percents (to adjust contribution according inflation rates, good for long investments)
+- `contributionPerAnnumChange: number` Changes of annual contribution in percents (to adjust contribution according inflation rates, good for long investments)
 
 ###### Debt Repayment Options
 
