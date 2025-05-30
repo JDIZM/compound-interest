@@ -15,7 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@jdizm/finance-calculator": "file:../dist",
-    "@types/node": "^20.2.1"
+    "@types/node": "^22.0.0"
   },
   "devDependencies": {
     "tsx": "^4.7.1",
@@ -23,6 +23,6 @@
     "vite-node": "^3.0.0"
   },
   "volta": {
-    "node": "20.19.2"
+    "node": "22.16.0"
   }
 }
