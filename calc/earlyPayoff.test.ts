@@ -54,20 +54,38 @@ describe("earlyMortgagePayoff", () => {
     expect(result.monthsSaved).toBeGreaterThan(0);
   });
 
-  it("throws when inputs are invalid", () => {
-    expect(() => earlyMortgagePayoff({ homeValue: 0, deposit: 0, interestRate: 5, years: 25 })).toThrow();
-    expect(() =>
-      earlyMortgagePayoff({ homeValue: 200_000, deposit: 250_000, interestRate: 5, years: 25 })
-    ).toThrow();
-    expect(() => earlyMortgagePayoff({ homeValue: 200_000, deposit: 20_000, interestRate: -1, years: 25 })).toThrow();
+  it("throws on each invalid input branch", () => {
+    const valid = { homeValue: 200_000, deposit: 20_000, interestRate: 5, years: 25 };
+    expect(() => earlyMortgagePayoff({ ...valid, homeValue: 0 })).toThrow("homeValue must be greater than 0");
+    expect(() => earlyMortgagePayoff({ ...valid, deposit: -1 })).toThrow("deposit cannot be negative");
+    expect(() => earlyMortgagePayoff({ ...valid, deposit: 250_000 })).toThrow("deposit cannot exceed homeValue");
+    expect(() => earlyMortgagePayoff({ ...valid, years: 0 })).toThrow("years must be greater than 0");
+    expect(() => earlyMortgagePayoff({ ...valid, interestRate: -1 })).toThrow("interestRate cannot be negative");
+    expect(() => earlyMortgagePayoff({ ...valid, extraMonthly: -10 })).toThrow("extraMonthly cannot be negative");
+    expect(() => earlyMortgagePayoff({ ...valid, lumpSums: [{ month: 12, amount: -1 }] })).toThrow(
+      "lump sum amount cannot be negative"
+    );
     expect(() =>
       earlyMortgagePayoff({
-        homeValue: 200_000,
-        deposit: 20_000,
-        interestRate: 5,
-        years: 25,
+        ...valid,
         lumpSums: [{ month: 0, amount: 1_000 }]
       })
-    ).toThrow();
+    ).toThrow("lump sum month must be greater than 0");
+  });
+
+  it("treats decimal rate input (0.05) the same as percentage (5)", () => {
+    const fromPct = earlyMortgagePayoff({
+      homeValue: 300_000,
+      deposit: 30_000,
+      interestRate: 5,
+      years: 25
+    });
+    const fromDec = earlyMortgagePayoff({
+      homeValue: 300_000,
+      deposit: 30_000,
+      interestRate: 0.05,
+      years: 25
+    });
+    expect(fromPct.baseMonthlyPayment).toBeCloseTo(fromDec.baseMonthlyPayment, 1);
   });
 });

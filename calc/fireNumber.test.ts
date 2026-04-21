@@ -64,6 +64,14 @@ describe("yearsToFire", () => {
         annualReturn: 0,
         target: 500_000
       })
-    ).toThrow();
+    ).toThrow("FIRE is unreachable with no return and no contribution");
+  });
+
+  it("throws on each invalid input branch", () => {
+    const valid = { currentSavings: 50_000, annualContribution: 20_000, annualReturn: 7, target: 1_000_000 };
+    expect(() => yearsToFire({ ...valid, target: 0 })).toThrow("target must be greater than 0");
+    expect(() => yearsToFire({ ...valid, target: -10 })).toThrow("target must be greater than 0");
+    expect(() => yearsToFire({ ...valid, currentSavings: -1 })).toThrow("currentSavings cannot be negative");
+    expect(() => yearsToFire({ ...valid, annualContribution: -1 })).toThrow("annualContribution cannot be negative");
   });
 });

@@ -48,9 +48,18 @@ describe("solveContributionForGoal", () => {
   });
 
   it("throws on invalid inputs", () => {
-    expect(() => solveContributionForGoal({ target: 0, years: 5, annualRate: 5 })).toThrow();
-    expect(() => solveContributionForGoal({ target: 1000, years: 0, annualRate: 5 })).toThrow();
-    expect(() => solveContributionForGoal({ target: 1000, years: 5, annualRate: 5, startingBalance: -1 })).toThrow();
+    expect(() => solveContributionForGoal({ target: 0, years: 5, annualRate: 5 })).toThrow(
+      "target must be greater than 0"
+    );
+    expect(() => solveContributionForGoal({ target: 1000, years: 0, annualRate: 5 })).toThrow(
+      "years must be greater than 0"
+    );
+    expect(() => solveContributionForGoal({ target: 1000, years: 5, annualRate: 5, startingBalance: -1 })).toThrow(
+      "startingBalance cannot be negative"
+    );
+    expect(() => solveContributionForGoal({ target: 1000, years: 5, annualRate: 5, compoundingPerYear: 0 })).toThrow(
+      "compoundingPerYear must be greater than 0"
+    );
   });
 });
 
@@ -91,6 +100,24 @@ describe("solveYearsToGoal", () => {
   it("throws when the goal is unreachable with no return and no contribution", () => {
     expect(() =>
       solveYearsToGoal({ target: 10_000, contributionPerMonth: 0, annualRate: 0, startingBalance: 100 })
-    ).toThrow();
+    ).toThrow("Goal is unreachable with no contribution and no return");
+  });
+
+  it("throws on each invalid input branch", () => {
+    expect(() => solveYearsToGoal({ target: 0, contributionPerMonth: 500, annualRate: 5 })).toThrow(
+      "target must be greater than 0"
+    );
+    expect(() => solveYearsToGoal({ target: 10_000, contributionPerMonth: -10, annualRate: 5 })).toThrow(
+      "contributionPerMonth cannot be negative"
+    );
+    expect(() =>
+      solveYearsToGoal({ target: 10_000, contributionPerMonth: 500, annualRate: 5, compoundingPerYear: 0 })
+    ).toThrow("compoundingPerYear must be greater than 0");
+  });
+
+  it("throws when the non-zero-rate path produces a zero denominator (no seed, no contribution)", () => {
+    expect(() =>
+      solveYearsToGoal({ target: 10_000, contributionPerMonth: 0, annualRate: 5, startingBalance: 0 })
+    ).toThrow("Goal is unreachable with these inputs");
   });
 });

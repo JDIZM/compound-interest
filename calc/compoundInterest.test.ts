@@ -618,4 +618,22 @@ describe("compoundInterestPerPeriod", () => {
       );
     });
   });
+
+  describe("invalid option combinations", () => {
+    it("throws when debtRepayment is combined with accrualOfPaymentsPerAnnum", () => {
+      // Intentional invalid combo for runtime guard coverage — cast silences the shape check.
+      const options = {
+        type: "debtRepayment",
+        principal: 150_000,
+        rate: 4,
+        years: 25,
+        paymentsPerAnnum: 12,
+        debtRepayment: { interestRate: 6, type: "repayment" },
+        accrualOfPaymentsPerAnnum: true
+      } as unknown as IOptions;
+      expect(() => compoundInterestPerPeriod(options)).toThrow(
+        "Invalid option combination: debtRepayment and accrualOfPaymentsPerAnnum"
+      );
+    });
+  });
 });
