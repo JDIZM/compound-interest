@@ -39,11 +39,7 @@
     "strictPropertyInitialization": false,
 
     // Directories
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "outDir": "./dist"
   },
   "exclude": ["node_modules", "dist", "test-package", "test.ts"]
 }
