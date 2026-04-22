@@ -21,6 +21,12 @@ describe("fireNumber", () => {
     expect(() => fireNumber({ annualSpend: 40_000, withdrawalRate: 0 })).toThrow();
     expect(() => fireNumber({ annualSpend: 40_000, withdrawalRate: 150 })).toThrow();
   });
+
+  it("accepts a 100% withdrawal rate (one year of expenses saved)", () => {
+    // toDecimalRate converts 100 -> 1.0 which now passes the guard (> 1 throws, == 1 allowed).
+    const result = fireNumber({ annualSpend: 40_000, withdrawalRate: 100 });
+    expect(result.target).toBe(40_000);
+  });
 });
 
 describe("yearsToFire", () => {

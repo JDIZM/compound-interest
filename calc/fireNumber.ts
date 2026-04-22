@@ -14,7 +14,7 @@ export const fireNumber = (options: FireNumberOptions): FireNumberResult => {
 
   if (annualSpend <= 0) throw new Error("annualSpend must be greater than 0");
   if (withdrawalRate <= 0) throw new Error("withdrawalRate must be greater than 0");
-  if (withdrawalRate >= 1) throw new Error("withdrawalRate must be less than 100%");
+  if (withdrawalRate > 1) throw new Error("withdrawalRate must be less than or equal to 100%");
 
   const target = annualSpend / withdrawalRate;
 
@@ -56,7 +56,7 @@ export const yearsToFire = (options: YearsToFireOptions): number => {
 
   const numerator = target * annualReturn + annualContribution;
   const denominator = currentSavings * annualReturn + annualContribution;
-  if (denominator <= 0) throw new Error("FIRE is unreachable with these inputs");
+  if (denominator <= 0 || numerator <= 0) throw new Error("FIRE is unreachable with these inputs");
 
   const years = Math.log(numerator / denominator) / Math.log(1 + annualReturn);
   return Number(years.toFixed(2));

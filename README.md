@@ -231,7 +231,7 @@ const years = yearsToFire({
 // -> 19.85
 ```
 
-Rates accept either percentage (`6`) or decimal (`0.06`) — the library normalises internally.
+The newer calculators (`savingsGoal`, `earlyPayoff`, `fireNumber`) accept rates as either percentage (`6`) or decimal (`0.06`) and normalise internally via `toDecimalRate`. The older calculators (`compoundInterestPerPeriod`, `mortgageCalculator`) treat rates as percentages only (e.g. pass `6`, not `0.06`).
 
 ### Building with Typescript
 

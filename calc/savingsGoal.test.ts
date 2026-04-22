@@ -39,6 +39,8 @@ describe("solveContributionForGoal", () => {
     });
 
     expect(result.contributionPerMonth).toBe(0);
+    // interestEarned must not go negative when the starting balance already outgrows the target.
+    expect(result.interestEarned).toBeGreaterThanOrEqual(0);
   });
 
   it("accepts decimal rates and percentage rates interchangeably", () => {

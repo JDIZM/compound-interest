@@ -70,7 +70,25 @@ describe("earlyMortgagePayoff", () => {
         ...valid,
         lumpSums: [{ month: 0, amount: 1_000 }]
       })
-    ).toThrow("lump sum month must be greater than 0");
+    ).toThrow("lump sum month must be a positive integer");
+  });
+
+  it("rejects non-integer lump sum months (would never match the whole-month schedule)", () => {
+    expect(() =>
+      earlyMortgagePayoff({
+        homeValue: 200_000,
+        deposit: 20_000,
+        interestRate: 5,
+        years: 25,
+        lumpSums: [{ month: 1.5, amount: 1_000 }]
+      })
+    ).toThrow("lump sum month must be a positive integer");
+  });
+
+  it("rejects terms longer than the 100-year simulation cap", () => {
+    expect(() => earlyMortgagePayoff({ homeValue: 200_000, deposit: 20_000, interestRate: 5, years: 101 })).toThrow(
+      "years cannot exceed 100"
+    );
   });
 
   it("treats decimal rate input (0.05) the same as percentage (5)", () => {

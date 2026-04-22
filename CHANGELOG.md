@@ -7,7 +7,7 @@ Added:
 - `solveContributionForGoal(options)` / `solveYearsToGoal(options)` — reverse savings-goal solvers using the future-value-of-annuity formula. Solve for either the monthly contribution needed to reach a target by a date, or the years needed at a given contribution.
 - `earlyMortgagePayoff(options)` — simulate a repayment mortgage with extra monthly payments and one-off lump sums. Returns months saved, interest saved, and a per-month schedule versus the baseline term.
 - `fireNumber(options)` / `yearsToFire(options)` — FIRE number from annual spend and safe withdrawal rate, and years-to-FIRE from current savings, contributions, and expected return.
-- Shared `toDecimalRate` helper extracted to `calc/helpers.ts` so rate inputs accept either percentage (6) or decimal (0.06) interchangeably across all calculators.
+- Shared `toDecimalRate` helper extracted to `calc/helpers.ts`. Used by the three new calculators (`savingsGoal`, `earlyPayoff`, `fireNumber`) so their rate inputs accept either percentage (6) or decimal (0.06). The existing `compoundInterestPerPeriod` and `mortgageCalculator` still treat rates as percentages only — unchanged behaviour.
 
 Unchanged:
 

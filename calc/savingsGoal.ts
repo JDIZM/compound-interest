@@ -42,7 +42,13 @@ export const solveContributionForGoal = (options: SavingsGoalContributionOptions
   }
 
   const totalContributions = contributionPerPeriod * periods;
-  const interestEarned = target - startingBalance - totalContributions;
+  // When the starting balance already grows past the target, no contributions are needed and
+  // the "interest earned" is the growth-of-startingBalance above the target. Otherwise it's
+  // target minus contributions minus the starting balance. Clamp at 0 for the already-hit case.
+  const interestEarned =
+    shortfall <= 0
+      ? Math.max(0, growthOfStartingBalance - startingBalance)
+      : target - startingBalance - totalContributions;
 
   return {
     target,
@@ -89,12 +95,12 @@ export const solveYearsToGoal = (options: SavingsGoalYearsOptions): number => {
   if (ratePerPeriod === 0) {
     if (contributionPerPeriod <= 0) throw new Error("Goal is unreachable with no contribution and no return");
     const periods = (target - startingBalance) / contributionPerPeriod;
-    return periods / compoundingPerYear;
+    return Number((periods / compoundingPerYear).toFixed(2));
   }
 
   const numerator = target * ratePerPeriod + contributionPerPeriod;
   const denominator = startingBalance * ratePerPeriod + contributionPerPeriod;
-  if (denominator <= 0) throw new Error("Goal is unreachable with these inputs");
+  if (denominator <= 0 || numerator <= 0) throw new Error("Goal is unreachable with these inputs");
 
   const periods = Math.log(numerator / denominator) / Math.log(1 + ratePerPeriod);
   return Number((periods / compoundingPerYear).toFixed(2));
