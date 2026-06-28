@@ -9,11 +9,16 @@ describe("fireNumber", () => {
     expect(result.monthlyIncome).toBeCloseTo(40_000 / 12, 1);
   });
 
-  it("accepts a custom withdrawal rate as percentage or decimal", () => {
-    const pct = fireNumber({ annualSpend: 30_000, withdrawalRate: 3.5 });
-    const dec = fireNumber({ annualSpend: 30_000, withdrawalRate: 0.035 });
-    expect(pct.target).toBeCloseTo(dec.target, 2);
-    expect(pct.target).toBeCloseTo(30_000 / 0.035, 2);
+  it("treats a custom withdrawal rate as a percentage (3.5 = 3.5%)", () => {
+    const result = fireNumber({ annualSpend: 30_000, withdrawalRate: 3.5 });
+    expect(result.withdrawalRate).toBeCloseTo(0.035, 5);
+    expect(result.target).toBeCloseTo(30_000 / 0.035, 2);
+  });
+
+  it("treats a sub-1% withdrawal rate correctly (0.5 = 0.5%, not 50%)", () => {
+    const result = fireNumber({ annualSpend: 40_000, withdrawalRate: 0.5 });
+    // 0.5% SWR → 40,000 / 0.005 = 8,000,000. The old heuristic misread 0.5 as 50% → 80,000.
+    expect(result.target).toBeCloseTo(8_000_000, 2);
   });
 
   it("throws on invalid inputs", () => {
@@ -79,5 +84,17 @@ describe("yearsToFire", () => {
     expect(() => yearsToFire({ ...valid, target: -10 })).toThrow("target must be greater than 0");
     expect(() => yearsToFire({ ...valid, currentSavings: -1 })).toThrow("currentSavings cannot be negative");
     expect(() => yearsToFire({ ...valid, annualContribution: -1 })).toThrow("annualContribution cannot be negative");
+  });
+
+  it("throws when the return is -100% or lower (would break the log solve)", () => {
+    expect(() =>
+      yearsToFire({ currentSavings: 50_000, annualContribution: 20_000, annualReturn: -150, target: 1_000_000 })
+    ).toThrow("annualReturn must be greater than -100%");
+  });
+
+  it("throws when a negative return with no contribution makes FIRE unreachable", () => {
+    expect(() =>
+      yearsToFire({ currentSavings: 50_000, annualContribution: 0, annualReturn: -50, target: 1_000_000 })
+    ).toThrow("FIRE is unreachable with these inputs");
   });
 });

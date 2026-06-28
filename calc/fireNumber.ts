@@ -54,6 +54,9 @@ export const yearsToFire = (options: YearsToFireOptions): number => {
     return Number(((target - currentSavings) / annualContribution).toFixed(2));
   }
 
+  // A return of -100% or lower breaks the log() solve (Math.log of a non-positive number is NaN).
+  if (1 + annualReturn <= 0) throw new Error("annualReturn must be greater than -100%");
+
   const numerator = target * annualReturn + annualContribution;
   const denominator = currentSavings * annualReturn + annualContribution;
   if (denominator <= 0 || numerator <= 0) throw new Error("FIRE is unreachable with these inputs");

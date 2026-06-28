@@ -30,6 +30,19 @@ describe("PMT", () => {
 
     expect(result).toBe(1288.3718952291354);
   });
+
+  it("spreads the principal evenly at a zero interest rate instead of returning NaN", () => {
+    // (1+mir)^nper - 1 === 0 at mir 0, so the annuity formula divides by zero. Payment is
+    // simply principal / number of periods.
+    const result = PMT(0, years * 12, principal, 0, 0);
+
+    expect(Number.isNaN(result)).toBe(false);
+    expect(result).toBe(principal / (years * 12)); // 240,000 / 360 = 666.66…
+  });
+
+  it("includes any future value in the zero-rate payment", () => {
+    expect(PMT(0, 10, 1_000, 500, 0)).toBe(150); // (1000 + 500) / 10
+  });
 });
 
 describe("calcInterestPayments", () => {

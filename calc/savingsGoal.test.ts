@@ -43,10 +43,28 @@ describe("solveContributionForGoal", () => {
     expect(result.interestEarned).toBeGreaterThanOrEqual(0);
   });
 
-  it("accepts decimal rates and percentage rates interchangeably", () => {
-    const fromPct = solveContributionForGoal({ target: 50_000, years: 5, annualRate: 7 });
-    const fromDec = solveContributionForGoal({ target: 50_000, years: 5, annualRate: 0.07 });
-    expect(fromPct.contributionPerMonth).toBeCloseTo(fromDec.contributionPerMonth, 1);
+  it("treats the rate as a percentage (a higher rate needs a smaller contribution)", () => {
+    const low = solveContributionForGoal({ target: 50_000, years: 5, annualRate: 2 });
+    const high = solveContributionForGoal({ target: 50_000, years: 5, annualRate: 8 });
+    // Compounding does more of the work at 8% than at 2%, so less needs to be contributed.
+    expect(high.contributionPerMonth).toBeLessThan(low.contributionPerMonth);
+    expect(high.interestEarned).toBeGreaterThan(low.interestEarned);
+  });
+
+  it("treats a sub-1% rate as a sub-1% percentage, not a decimal", () => {
+    // 0.5 means 0.5%, which is barely above zero-rate (straight division). Under the old
+    // heuristic 0.5 was misread as 50% and produced a wildly smaller contribution.
+    const halfPct = solveContributionForGoal({ target: 12_000, years: 1, annualRate: 0.5 });
+    const zero = solveContributionForGoal({ target: 12_000, years: 1, annualRate: 0 });
+    expect(halfPct.contributionPerMonth).toBeLessThan(zero.contributionPerMonth);
+    expect(halfPct.contributionPerMonth).toBeGreaterThan(995); // just under the £1,000 zero-rate figure
+  });
+
+  it("handles non-monthly compounding (quarterly)", () => {
+    const result = solveContributionForGoal({ target: 100_000, years: 10, annualRate: 6, compoundingPerYear: 4 });
+    expect(result.periods).toBe(40);
+    expect(result.contributionPerYear).toBeCloseTo(result.contributionPerPeriod * 4, 1);
+    expect(result.contributionPerMonth).toBeCloseTo((result.contributionPerPeriod * 4) / 12, 1);
   });
 
   it("throws on invalid inputs", () => {
@@ -121,5 +139,31 @@ describe("solveYearsToGoal", () => {
     expect(() =>
       solveYearsToGoal({ target: 10_000, contributionPerMonth: 0, annualRate: 5, startingBalance: 0 })
     ).toThrow("Goal is unreachable with these inputs");
+  });
+
+  it("throws when startingBalance is negative", () => {
+    expect(() =>
+      solveYearsToGoal({ target: 10_000, contributionPerMonth: 500, annualRate: 5, startingBalance: -1 })
+    ).toThrow("startingBalance cannot be negative");
+  });
+
+  it("validates inputs before the already-met early return", () => {
+    // startingBalance >= target, but a zero compounding frequency must still throw rather than
+    // short-circuit to 0.
+    expect(() =>
+      solveYearsToGoal({
+        target: 10_000,
+        contributionPerMonth: 500,
+        annualRate: 5,
+        startingBalance: 20_000,
+        compoundingPerYear: 0
+      })
+    ).toThrow("compoundingPerYear must be greater than 0");
+  });
+
+  it("throws when the rate is -100% or lower (would break the log solve)", () => {
+    expect(() =>
+      solveYearsToGoal({ target: 100_000, contributionPerMonth: 500, annualRate: -100, compoundingPerYear: 1 })
+    ).toThrow("annualRate must be greater than -100%");
   });
 });
