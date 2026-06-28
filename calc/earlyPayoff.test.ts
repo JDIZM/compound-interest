@@ -91,19 +91,83 @@ describe("earlyMortgagePayoff", () => {
     );
   });
 
-  it("treats decimal rate input (0.05) the same as percentage (5)", () => {
-    const fromPct = earlyMortgagePayoff({
-      homeValue: 300_000,
-      deposit: 30_000,
-      interestRate: 5,
+  it("treats the interest rate as a percentage (6 = 6%, matching the mortgage calculator)", () => {
+    const result = earlyMortgagePayoff({
+      homeValue: 150_000,
+      deposit: 15_000,
+      interestRate: 6,
       years: 25
     });
-    const fromDec = earlyMortgagePayoff({
+    // 135k principal at 6% over 25y → ~£869.81/mo, the same PMT the mortgage calculator quotes.
+    expect(result.baseMonthlyPayment).toBeCloseTo(869.81, 1);
+  });
+
+  it("treats a sub-1% rate as a sub-1% percentage, not a decimal (0.5 = 0.5%)", () => {
+    const half = earlyMortgagePayoff({ homeValue: 150_000, deposit: 15_000, interestRate: 0.5, years: 25 });
+    const six = earlyMortgagePayoff({ homeValue: 150_000, deposit: 15_000, interestRate: 6, years: 25 });
+    // 0.5% is a real, tiny rate — its payment sits just above the interest-free baseline and
+    // well below the 6% payment. (Under the old heuristic 0.5 was misread as 50%.)
+    const interestFree = 135_000 / 300;
+    expect(half.baseMonthlyPayment).toBeGreaterThan(interestFree);
+    expect(half.baseMonthlyPayment).toBeLessThan(six.baseMonthlyPayment);
+  });
+
+  it("handles a 0% interest rate as straight-line repayment (no NaN)", () => {
+    const result = earlyMortgagePayoff({
       homeValue: 300_000,
       deposit: 30_000,
-      interestRate: 0.05,
+      interestRate: 0,
       years: 25
     });
-    expect(fromPct.baseMonthlyPayment).toBeCloseTo(fromDec.baseMonthlyPayment, 1);
+
+    expect(Number.isNaN(result.baseMonthlyPayment)).toBe(false);
+    expect(result.baseMonthlyPayment).toBeCloseTo(900, 2); // 270,000 / 300 months
+    expect(result.baselineTotalInterest).toBe(0);
+    expect(result.newTotalInterest).toBe(0);
+    expect(result.newMonths).toBe(300);
+    expect(result.monthsSaved).toBe(0);
+  });
+
+  it("saves months at 0% with extra payments and still reports no interest", () => {
+    const result = earlyMortgagePayoff({
+      homeValue: 300_000,
+      deposit: 30_000,
+      interestRate: 0,
+      years: 25,
+      extraMonthly: 100
+    });
+    // 900 + 100 = 1,000/mo on 270k → 270 months
+    expect(result.newMonths).toBe(270);
+    expect(result.monthsSaved).toBe(30);
+    expect(result.interestSaved).toBe(0);
+  });
+
+  it("accumulates multiple lump sums falling in the same month", () => {
+    const result = earlyMortgagePayoff({
+      homeValue: 200_000,
+      deposit: 20_000,
+      interestRate: 4,
+      years: 20,
+      lumpSums: [
+        { month: 12, amount: 5_000 },
+        { month: 12, amount: 3_000 }
+      ]
+    });
+    expect(result.schedule[11]!.lumpSum).toBe(8_000);
+  });
+
+  it("clamps a lump sum that exceeds the outstanding balance and clears the loan", () => {
+    const result = earlyMortgagePayoff({
+      homeValue: 110_000,
+      deposit: 10_000,
+      interestRate: 3,
+      years: 25,
+      lumpSums: [{ month: 2, amount: 500_000 }]
+    });
+    const last = result.schedule[result.schedule.length - 1]!;
+    expect(last.balance).toBeCloseTo(0, 1);
+    // The applied lump is clamped to the remaining balance, never more than was owed.
+    expect(last.lumpSum).toBeLessThan(110_000);
+    expect(result.newMonths).toBeLessThanOrEqual(3);
   });
 });

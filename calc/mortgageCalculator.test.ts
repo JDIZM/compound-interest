@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mortgageCalculator } from "./mortgageCalculator";
-import type { MortgageType } from "../types/calculator";
+import type { MortgageType, MortgageResult } from "../types/calculator";
 
 describe("mortgageCalculator", () => {
   it("should calculate an interest only mortgage with the correct payments and principal", () => {
@@ -47,6 +47,22 @@ describe("mortgageCalculator", () => {
       principal: 135000,
       years: 25
     });
+  });
+
+  it("calculates a 0% repayment mortgage as straight-line principal division (no NaN)", () => {
+    const result = mortgageCalculator(
+      {
+        homeValue: 150_000,
+        deposit: 15_000,
+        interestRate: 0,
+        years: 25
+      },
+      "repayment"
+    ) as MortgageResult;
+
+    // 135,000 principal over 300 months with no interest → £450/mo exactly.
+    expect(Number.isNaN(result.monthlyRepayment)).toBe(false);
+    expect(result.monthlyRepayment).toBe(450);
   });
 
   describe("input validation", () => {

@@ -84,13 +84,20 @@ export const solveYearsToGoal = (options: SavingsGoalYearsOptions): number => {
   const { target, contributionPerMonth, startingBalance = 0, compoundingPerYear = 12 } = options;
   const annualRate = toDecimalRate(options.annualRate);
 
+  // Validate every input before the "already met" early return, so bad inputs (e.g. a zero
+  // compounding frequency) still surface an error even when startingBalance >= target.
   if (target <= 0) throw new Error("target must be greater than 0");
-  if (startingBalance >= target) return 0;
+  if (startingBalance < 0) throw new Error("startingBalance cannot be negative");
   if (contributionPerMonth < 0) throw new Error("contributionPerMonth cannot be negative");
   if (compoundingPerYear <= 0) throw new Error("compoundingPerYear must be greater than 0");
+  if (startingBalance >= target) return 0;
 
   const ratePerPeriod = annualRate / compoundingPerYear;
   const contributionPerPeriod = contributionPerMonth * (12 / compoundingPerYear);
+
+  // A rate of -100% or lower wipes out the balance each period and breaks the log() solve
+  // (Math.log of a non-positive number is NaN). Reject it explicitly.
+  if (1 + ratePerPeriod <= 0) throw new Error("annualRate must be greater than -100%");
 
   if (ratePerPeriod === 0) {
     if (contributionPerPeriod <= 0) throw new Error("Goal is unreachable with no contribution and no return");
