@@ -1,15 +1,12 @@
-# compound interest
+# @jdizm/finance-calculator
 
-A finance calculator to:
-
-- calculate `compound interest` over a period of time with different investment types.
-- calculate `mortgage` repayments and interest only payments.
+A TypeScript finance library for compound interest, mortgage, savings goal, early mortgage payoff, and FIRE number calculations. Client + server, dual ESM/CJS.
 
 ### Features
 
-This calculator can be used to calculate the future value of a present lump sum with contributions, debt repayment or mortgage. The calculator compounds interest per period and can be used to calculate the value of investments or debt over a period of time.
+Calculate the future value of a present lump sum with contributions, debt repayment or mortgage. Compounds interest per period and returns rich per-period data suitable for charting.
 
-For example, if you invest $1,000 today at a 7% annual interest rate, how much will $1,000 be worth if invested for 10 years?
+For example, if you invest $1,000 today at a 7% annual interest rate, how much will $1,000 be worth invested for 10 years? Or: how much per month do I need to save to hit £100k in 10 years? Or: what's my FIRE number on £40k/year spend?
 
 #### Compound Interest
 
@@ -22,6 +19,17 @@ For example, if you invest $1,000 today at a 7% annual interest rate, how much w
 
 - [x] 1. calculate mortgage - repayment
 - [x] 2. calculate mortgage - interest only
+- [x] 3. simulate early mortgage payoff with extra monthly + lump sum payments (v1.5.0)
+
+#### Savings goal (v1.5.0)
+
+- [x] 1. solve for monthly contribution needed to reach a target by a date
+- [x] 2. solve for years needed at a given monthly contribution
+
+#### FIRE (v1.5.0)
+
+- [x] 1. calculate FIRE number from annual spend + withdrawal rate
+- [x] 2. solve for years to FIRE given savings, contributions, and return rate
 
 ### Installation
 
@@ -39,12 +47,28 @@ Importing the library:
 
 ```js
 // CommonJS
-const { compoundInterestPerPeriod, mortgageCalculator } = require("@jdizm/finance-calculator");
+const {
+  compoundInterestPerPeriod,
+  mortgageCalculator,
+  solveContributionForGoal,
+  solveYearsToGoal,
+  earlyMortgagePayoff,
+  fireNumber,
+  yearsToFire,
+} = require("@jdizm/finance-calculator");
 ```
 
 ```js
 // ESM
-import { compoundInterestPerPeriod, mortgageCalculator } from "@jdizm/finance-calculator";
+import {
+  compoundInterestPerPeriod,
+  mortgageCalculator,
+  solveContributionForGoal,
+  solveYearsToGoal,
+  earlyMortgagePayoff,
+  fireNumber,
+  yearsToFire,
+} from "@jdizm/finance-calculator";
 ```
 
 #### Mortgage Calculator
@@ -146,6 +170,68 @@ What are investment types? These are used to calculate the final results:
 1. lumpSum - a single investment calculated over a period of time
 2. debtRepayment - a borrowed investment calculated over a period of time with a decreasing principal or interest only payments
 3. contribution - a single investment calculated over a period of time with additional contribution
+
+#### Savings Goal Calculator (v1.5.0)
+
+Solve for either the monthly contribution needed to reach a target or the years required given a contribution. Uses the future-value-of-annuity formula.
+
+```ts
+// How much per month to reach £100k in 10 years at 6% with £5k seed?
+const result = solveContributionForGoal({
+  target: 100_000,
+  years: 10,
+  annualRate: 6,
+  startingBalance: 5_000,
+});
+// -> { contributionPerMonth: 609.39, totalContributions: 78_126, interestEarned: 16_874, ... }
+
+// How many years to reach £100k at £500/mo?
+const years = solveYearsToGoal({
+  target: 100_000,
+  contributionPerMonth: 500,
+  annualRate: 7,
+  startingBalance: 5_000,
+});
+// -> 12.44
+```
+
+#### Early Mortgage Payoff (v1.5.0)
+
+Simulate extra monthly payments and one-off lump sums against a standard repayment mortgage. Returns months + interest saved plus a per-month schedule.
+
+```ts
+const result = earlyMortgagePayoff({
+  homeValue: 300_000,
+  deposit: 30_000,
+  interestRate: 5,
+  years: 25,
+  extraMonthly: 200,
+  lumpSums: [{ month: 24, amount: 10_000 }],
+});
+// -> {
+//   baselineMonths: 300, baselineTotalInterest, newMonths,
+//   monthsSaved, interestSaved, baseMonthlyPayment, schedule: [...]
+// }
+```
+
+#### FIRE Number (v1.5.0)
+
+Calculate the savings target for financial independence, then the years needed to reach it.
+
+```ts
+const fire = fireNumber({ annualSpend: 40_000, withdrawalRate: 4 });
+// -> { target: 1_000_000, monthlyIncome: 3_333.33, ... }
+
+const years = yearsToFire({
+  currentSavings: 50_000,
+  annualContribution: 20_000,
+  annualReturn: 7,
+  target: fire.target,
+});
+// -> 19.85
+```
+
+The newer calculators (`savingsGoal`, `earlyPayoff`, `fireNumber`) accept rates as either percentage (`6`) or decimal (`0.06`) and normalise internally via `toDecimalRate`. The older calculators (`compoundInterestPerPeriod`, `mortgageCalculator`) treat rates as percentages only (e.g. pass `6`, not `0.06`).
 
 ### Building with Typescript
 

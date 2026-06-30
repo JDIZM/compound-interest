@@ -34,6 +34,12 @@ export const PMT = (mir: number, nper: number, pv: number, fv = 0, type: 0 | 1) 
   // type - when the payments are due:
   //    0: end of the period, e.g. end of month (default)
   //    1: beginning of period
+
+  // At a zero interest rate the annuity formula divides by zero ((1+mir)^nper - 1 === 0),
+  // which silently yields NaN. With no interest the payment is simply the amount owed spread
+  // evenly across the periods, so handle it explicitly.
+  if (mir === 0) return (pv + fv) / nper;
+
   return (mir * (pv * Math.pow(1 + mir, nper) + fv)) / ((1 + mir * type) * (Math.pow(1 + mir, nper) - 1));
 };
 

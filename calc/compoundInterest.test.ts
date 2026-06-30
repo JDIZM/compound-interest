@@ -30,6 +30,19 @@ describe("PMT", () => {
 
     expect(result).toBe(1288.3718952291354);
   });
+
+  it("spreads the principal evenly at a zero interest rate instead of returning NaN", () => {
+    // (1+mir)^nper - 1 === 0 at mir 0, so the annuity formula divides by zero. Payment is
+    // simply principal / number of periods.
+    const result = PMT(0, years * 12, principal, 0, 0);
+
+    expect(Number.isNaN(result)).toBe(false);
+    expect(result).toBe(principal / (years * 12)); // 240,000 / 360 = 666.66…
+  });
+
+  it("includes any future value in the zero-rate payment", () => {
+    expect(PMT(0, 10, 1_000, 500, 0)).toBe(150); // (1000 + 500) / 10
+  });
 });
 
 describe("calcInterestPayments", () => {
@@ -185,7 +198,10 @@ describe("compoundInterestPerPeriod", () => {
               ["1", [251625, 253250, 254875, 256500, 258125, 259750, 261375, 263000, 264625, 266250, 267875, 269500]],
               [
                 "2",
-                [271251.75, 273003.5, 274755.25, 276507, 278258.75, 280010.5, 281762.25, 283514, 285265.75, 287017.5]
+                [
+                  271251.75, 273003.5, 274755.25, 276507, 278258.75, 280010.5, 281762.25, 283514, 285265.75, 287017.5,
+                  288769.25, 290521
+                ]
               ]
             ]),
             interestPerAnnum: [19500, 21021],
@@ -615,6 +631,24 @@ describe("compoundInterestPerPeriod", () => {
           accrualOfPaymentsPerAnnum: true,
           investmentType: "contribution"
         })
+      );
+    });
+  });
+
+  describe("invalid option combinations", () => {
+    it("throws when debtRepayment is combined with accrualOfPaymentsPerAnnum", () => {
+      // Intentional invalid combo for runtime guard coverage — cast silences the shape check.
+      const options = {
+        type: "debtRepayment",
+        principal: 150_000,
+        rate: 4,
+        years: 25,
+        paymentsPerAnnum: 12,
+        debtRepayment: { interestRate: 6, type: "repayment" },
+        accrualOfPaymentsPerAnnum: true
+      } as unknown as IOptions;
+      expect(() => compoundInterestPerPeriod(options)).toThrow(
+        "Invalid option combination: debtRepayment and accrualOfPaymentsPerAnnum"
       );
     });
   });
