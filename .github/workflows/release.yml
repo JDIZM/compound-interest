@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20, 22, 24]
+        node-version: [22, 24]
     steps:
-      - uses: actions/checkout@v5
-      - uses: volta-cli/action@v4
+      - uses: actions/checkout@v7
+      - uses: volta-cli/action@v5
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-and-build
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # Fetch all history so we can switch back to the branch
           fetch-depth: 0
@@ -34,7 +34,7 @@ jobs:
         run: git checkout main
 
       # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
@@ -45,15 +45,24 @@ jobs:
         run: |
           VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
           echo "Updating package.json version to $VERSION"
-          npm version $VERSION --no-git-tag-version
+          # --allow-same-version: the release branch may already declare this version,
+          # in which case npm version would otherwise error out.
+          npm version "$VERSION" --allow-same-version --no-git-tag-version
 
       - name: Commit version change
         run: |
+          VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add package.json
-          git commit -m "chore(release): update version to $VERSION"
-          git push
+          # Only commit when the version actually changed; otherwise `git commit` would
+          # fail with "nothing to commit" and break the release.
+          if git diff --staged --quiet; then
+            echo "package.json already at $VERSION — nothing to commit"
+          else
+            git commit -m "chore(release): update version to $VERSION"
+            git push
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
