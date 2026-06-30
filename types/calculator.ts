@@ -96,3 +96,86 @@ export interface DebtRepaymentResult extends InterestResult {
 }
 
 export type CompoundInterestResult = InterestResult | DebtRepaymentResult;
+
+export type SavingsGoalContributionOptions = {
+  target: number;
+  years: number;
+  annualRate: number;
+  startingBalance?: number;
+  compoundingPerYear?: number;
+};
+
+export type SavingsGoalYearsOptions = {
+  target: number;
+  contributionPerMonth: number;
+  annualRate: number;
+  startingBalance?: number;
+  compoundingPerYear?: number;
+};
+
+export interface SavingsGoalResult {
+  target: number;
+  years: number;
+  annualRate: number;
+  startingBalance: number;
+  compoundingPerYear: number;
+  contributionPerPeriod: number;
+  contributionPerMonth: number;
+  contributionPerYear: number;
+  totalContributions: number;
+  interestEarned: number;
+  periods: number;
+}
+
+export type EarlyPayoffOptions = {
+  homeValue: number;
+  deposit: number;
+  interestRate: number;
+  years: number;
+  extraMonthly?: number;
+  lumpSums?: LumpSumPayment[];
+};
+
+export type LumpSumPayment = {
+  month: number;
+  amount: number;
+};
+
+export interface PayoffScheduleEntry {
+  month: number;
+  interest: number;
+  principal: number;
+  lumpSum: number;
+  balance: number;
+}
+
+export interface EarlyPayoffResult {
+  principal: number;
+  baselineMonths: number;
+  baselineTotalInterest: number;
+  baseMonthlyPayment: number;
+  newMonths: number;
+  newTotalInterest: number;
+  monthsSaved: number;
+  interestSaved: number;
+  schedule: PayoffScheduleEntry[];
+}
+
+export type FireNumberOptions = {
+  annualSpend: number;
+  withdrawalRate?: number;
+};
+
+export interface FireNumberResult {
+  annualSpend: number;
+  withdrawalRate: number;
+  target: number;
+  monthlyIncome: number;
+}
+
+export type YearsToFireOptions = {
+  currentSavings: number;
+  annualContribution: number;
+  annualReturn: number;
+  target: number;
+};
