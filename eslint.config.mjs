@@ -8,8 +8,6 @@ export default tseslint.config(
   { ignores: ["dist/**", "coverage/**", "test-package/**", "env.d.ts"] },
   js.configs.recommended,
   tseslint.configs.recommended,
-  // Disable formatting rules that Prettier owns — keep this last so it wins.
-  prettier,
   {
     languageOptions: {
       ecmaVersion: 2022,
@@ -27,5 +25,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "off"
     }
-  }
+  },
+  // Disable formatting rules that Prettier owns — keep this last so it wins.
+  prettier
 );
